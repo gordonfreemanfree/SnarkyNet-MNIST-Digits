@@ -29,18 +29,16 @@ class SnarkyNet {
   DECIMAL_POINTS:   number;         // Number of decimal points for representation
 
   constructor( x: Array<number>[], y: Array<number>[], weights: Array<number>[] ) {
-    this.DECIMAL_POINTS = 1;                    // Decimal points
+    this.DECIMAL_POINTS = 1000000;                    // Decimal points
     this.x = this.num2field_matrix( x );              // Inputs
     this.y = this.num2field_matrix( y );              // Outputs
     this.weights = this.num2field_matrix( weights );  // Weights
     this.error_history = Array<number>();             // History of the error
     this.epoch_list = Array<number>();                // Epoch list
 
-    // feed forward
-    this.feed_forward();
-    let test = new Field( 0 )
-    test.add( new Field( 0 ) )
-    console.log( test.add( Field( 1 ).mul( Field( 1 ) ) ) )
+    // train the model 
+    this.feed_forward( )
+
   }
   
   num2field_matrix( x: Array<number>[] ) {
@@ -92,36 +90,92 @@ class SnarkyNet {
   }
 
   feed_forward( ) {
-    // this.hidden = this.relu( this.dot_matrix( this.x, this.weights ) );
-
-    //this.hidden = this.dot_matrix( this.x, this.weights );
-    this.dot_matrix( this.x, this.weights );
+    // Perform feed forward training
+    this.hidden = this.relu_m( this.dot_product_m( this.x, this.weights ) );
   }
 
-  dot_matrix( m1: Array<Field>[], m2: Array<Field>[] ) {
+  back_propogation( ) {
+    // Perform back propogation
+    let error = this.calculate_error();
+    let delta = this.relu_deriv_m( this.hidden );
+  }
+
+  // Matrix Methods
+  dot_product_m( m1: Array<Field>[], m2: Array<Field>[] ): Array<Field>[] {
     // perform a dot product on the two matricies
-    let result = Array<Field>();
+    let result = Array();
     let m2_t = this.transpose_f( m2 );
-    console.log( m1 )
     for (let i = 0; i < m1.length; i++) {
-      // m_array = = Array<Field>
+      let m_array = Array<Field>();
       for (let j = 0; j < m2_t.length; j++) {
-        result[ i ] = this.dot_vector( m1[ i ],  m2_t[ j ] );
+        m_array[ j ]= this.dot_product_a( m1[ i ],  m2_t[ j ] ); //TODO verify this works a matrix for weights
       }
-      break;
+      result[ i ] = m_array;
     }
     return result;
   }
 
-  dot_vector( v1: Array<Field>, v2: Array<Field> ) {
+  calculate_error( ): Array<Field>[] {
+    // calculate the error between the output (this.y) and the hidden (this.hidden)
+    let result = Array();
+    for ( let i = 0; i < this.x.length; i++ ) {
+      result[ i ] = this.subtract_a( this.y[ i ], this.hidden[ i ] )
+    }
+    return result;
+  }
+
+  relu_m( x: Array<Field>[] ): Array<Field>[] {
+    // relu array implementation
+    let result = Array();
+    console.log( x );
+    for (let i = 0; i < x.length; i++) {
+        result[ i ] = this.relu_a( x[ i ] );
+      }
+      return result;
+  }
+
+  relu_deriv_m( x: Array<Field>[] ): Array<Field>[] {
+    // relu derivative array implementation
+    let result = Array();
+    for (let i = 0; i < x.length; i++) {
+      result[ i ] = this.relu_deriv_a( x[ i ] );
+      }
+      return result;
+  }
+
+  // Array Methods
+  dot_product_a( v1: Array<Field>, v2: Array<Field> ): Field {
     // perform a dot product on the two field arrays v1 and v2
-    let result = Field(0);
+    let result = Field.zero;
     for (let i = 0; i < v1.length; i++) {
-        result.add( v1[ i ].mul( v2[ i ] ) );
-        console.log( 'V1: ', v1[ i ] );
-        console.log( 'V2: ', v2[ i ] );
-        console.log( 'Mult: ', v1[ i ].mul( v2[ i ] ) );
-        console.log( 'Result: ', result );
+        result = result.add( v1[ i ].mul( v2[ i ] ) );
+      }
+      return result;
+  }
+
+  subtract_a( v1: Array<Field>, v2: Array<Field> ) {
+    // subtract v1 from v2
+    let result = Array<Field>();
+    for ( let i = 0; i < v1.length; i++ ) {
+      result[ i ] = v2[ i ].sub( v1[ i ] );
+    }
+    return result;
+  }
+
+  relu_a( x: Array<Field> ): Array<Field> {
+    // relu array implementation
+    let result = Array<Field>();
+    for (let i = 0; i < x.length; i++) {
+      result[ i ] = this.relu( x[ i ] );
+      }
+    return result;
+  }
+
+  relu_deriv_a( x: Array<Field> ): Array<Field> {
+    // relu derivative array implementation
+    let result = Array<Field>();
+    for (let i = 0; i < x.length; i++) {
+      result[i] = this.relu_deriv( x[ i ] );
       }
       return result;
   }
@@ -130,6 +184,11 @@ class SnarkyNet {
   relu( x: Field ) {
     // relu implementation
     return Circuit.if( x.gt( 0 ), x, Field.zero );
+  }
+
+  relu_deriv( x: Field ) {
+    // relu derivative implementation
+    return Circuit.if( x.gt( 0 ), Field( 1 ), Field.zero );
   }
 
   leaky_relu( x: Field, alpha = 0.01 ) {
@@ -150,7 +209,6 @@ await isReady;
 
 // Input in the form of an array of array of numbers, aka matrix
 // This will be converted to a matrix of fields
-
 let inputs = [[0, 1, 0],
               [0, 1, 1],
               [0, 0, 0],
@@ -169,6 +227,9 @@ let model: SnarkyNet;
 
 // Run the model
 model = new SnarkyNet( inputs, outputs, weights );
+
+// Train the model
+// model.train()
 
 // Shutdown
 shutdown();
