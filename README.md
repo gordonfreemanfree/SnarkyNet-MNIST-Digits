@@ -33,4 +33,5 @@ for the calculations.
 ## Notes
 Currently, the RelU and Leaky RelU are the two activation functions that are utilized in 
 the model until there is a method for expotential as that will allow for a sigmoid function.
-Unfortunately, the sigmoid function is primarily used for binary classification models 
+Unfortunately, the sigmoid function is primarily used for binary classification models and
+will have to be figured out to properly implement a binary classification model. 
