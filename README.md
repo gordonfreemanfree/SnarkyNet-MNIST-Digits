@@ -18,6 +18,11 @@ model as the circuits are not required for training but are necessary for the pr
 the model. Thus, the weights from the training can be ported over directly into the circuit 
 for the calculations. 
 
+### Model Implementation
+The Neural Network consists of two layers:
+- Dense layer of 512 nodes with the RelU Activation Function
+- Dense layer of 10 nodes with a (pseudo) Softmax Activation Function
+
 ## Flow
  1. Create Tensorflow model of the proposed model type to obtain the weights of the model.
     The weights are stored in `./src/weights.js` and imported into the SNAPP
