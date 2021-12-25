@@ -1,9 +1,10 @@
-# SnarkyJS Neural Network
-SnarkyJS implementation of associated artifacts necessary for the creation of neural networks. <br>
-Proof of Concept
+# SnarkyNet - MNIST Handwritten Digits
+SnarkyJS implementation the Deep Neural Network for MNIST Handwritten Letters. <br>
+Proof of Concept / Work in Progress
 
 ## Description
-SnarkyJS implementation of a Neural Network where:
+SnarkyJS implementation of a Deep Neural Network for the MNIST Handwritten Digits Dataset. 
+The training and prediction from the Neural Network are separated as follows:
  - Training of the model performed in Tensorflow
  - Subsequent weights are integrated into a SNAPP for prediction
 The weights obtained during the training and validation via Tensorflow can be utilized in the
@@ -17,21 +18,20 @@ model as the circuits are not required for training but are necessary for the pr
 the model. Thus, the weights from the training can be ported over directly into the circuit 
 for the calculations. 
 
-### Proposed Model Types
- - Implement perceptron model as the simplest model 
- - Implement binary classification model
- - Implement convolutional neural network
- - Implement recurrent neural network
- - Implement long short term model neural network
+### Model Implementation
+The Neural Network consists of two layers:
+- Dense layer of 512 nodes with the RelU Activation Function
+- Dense layer of 10 nodes with a (pseudo) Softmax Activation Function
 
 ## Flow
- 1. Create Tensorflow model of the proposed model type to obtain the weights of the model
- 2. Create SnarkyJS equivalent model with the weights (`SnarkyNet`)
- 3. Create a smart contract extension utilizing the SnarkyJS model (`SmartSnarkyNet`)
- 4. Run verification tests
+ 1. Create Tensorflow model of the proposed model type to obtain the weights of the model.
+    The weights are stored in `./src/weights.js` and imported into the SNAPP
+ 3. Create SnarkyJS equivalent model (`SnarkyNet`) with the weights for each layer (`SnarkyLayer`)
+ 4. Create a smart contract extension utilizing the SnarkyJS model (`SmartSnarkyNet`)
+ 5. Run verification tests
 
 ## Notes
 Currently, the RelU and Leaky RelU are the two activation functions that are utilized in 
-the model until there is a method for expotential as that will allow for a sigmoid function.
-Unfortunately, the sigmoid function is primarily used for binary classification models and
-will have to be figured out to properly implement a binary classification model. 
+the model until there is a method for expotential as that will allow for a sigmoid and a proper
+softmax function. Currently, there is a pseudo softmax function to calculate relative probabilities
+for the classifications but it is lacking the exp implementation. 
