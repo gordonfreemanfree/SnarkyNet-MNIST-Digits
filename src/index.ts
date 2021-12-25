@@ -19,46 +19,64 @@ import {
 class SnarkyLayer {
   weights:    Array<Field>[];       // weights
   bias:       Array<Field>;         // bias
-  activation: string;               // activation function - TODO save it as a method?
+  activation: Function;             // activation function
+  alpha:      number;               // alpha value for leaky relu
+  decimal:    number;               // multiplier for decimals
 
-  constructor( weights: Array<number>[], activation='relu' ) {
+  constructor( weights: Array<number>[], activation='relu', alpha=0.01 ) {
     
-    // Activation Function
-    this.activation = activation;
+    // Multiplier for representing decimals
+    this.decimal = 1;
+
+    // Activation Function Selection
+    this.activation_selection( activation );
+
+    // Set alpha
+    this.alpha = Math.round( alpha * this.decimal );
 
     // Weights
-    this.weights = num2field( weights );
+    this.weights = this.num2field( weights );
 
-    // Bias
+    // Bias - TODO 
     // this.bias = Array(output_size).fill( Array( Field.zero ) )
     // this.bias = this.num2field( bias );
   }
   
-  @method call( input:  Array<Field>[] ):  Array<Field>[] {
-    // Simple dense layer implementation
+  @method call( input:  Array<Field>[] ): Array<Field>[] {
+    // Dense layer implementation
+    // Equivalent: output = activation( dot( input, weight ) + bias )
     // TODO make this callable
     // TODO implement bias
     return this.activation_matrix( this.dot_product( input, this.weights ) );
   }
 
+  // Select Activation Function
+  activation_selection( activation: string ): void {
+    // Select the activation function
+    if ( activation == 'relu' )            { this.activation = this.relu }        // RelU Activation Function         
+    else if ( activation == 'relu_leaky' ) { this.activation = this.relu_leaky }  // Leaky RelU Activation Function
+    else if ( activation == 'softmax' )    { this.activation = this.softmax }     // Softmax Activation Function
+    else { throw Error( 'Activation Function Not Valid' ) }                       // Invalid Activation Function
+  }
+
   // Dot Product
   dot_product( m1: Array<Field>[], m2: Array<Field>[] ): Array<Field>[] {
-    // perform a dot product on the two matricies
-    //TODO verify this works a matrix for weights
-    function dot_product_array( v1: Array<Field>, v2: Array<Field> ): Field {
+    // Perform a dot product on the two matricies
+    // TODO verify this works a matrix for weights
+    function dot_array( v1: Array<Field>, v2: Array<Field> ): Field {
       // perform a dot product on the two field arrays v1 and v2
       let result = Field.zero;
-      for ( let i = 0; i < v1.length; i++ ) { 
-        result = result.add( v1[ i ].mul( v2[ i ] ) ) 
-      }
+      v1.forEach( ( v1_value, i ) => 
+        result = result.add( v1_value.mul( v2[ i ] ) ) 
+      );
       return result;
     }
     let result = Array();
-    let m2_t = transpose( m2 );
+    let m2_t = this.transpose( m2 );
     for ( let i = 0; i < m1.length; i++ ) {
       let m_array = Array<Field>();
       for ( let j = 0; j < m2_t.length; j++ ) {
-        m_array[ j ]= dot_product_array( m1[ i ],  m2_t[ j ] ); 
+        m_array[ j ]= dot_array( m1[ i ],  m2_t[ j ] ); 
       }
       result[ i ] = m_array;
     }
@@ -70,51 +88,85 @@ class SnarkyLayer {
     // Applying activation functions for a matrix
     let result = Array();
     x.forEach( ( value, index ) => 
-      result[ index ] = this.activation_array( value )
+      result[ index ] = this.activation( value )
     );
     return result;
   }
 
-  activation_array( x: Array<Field> ): Array<Field> {
-    // Applying activation functions for an array
+  // Activation Functions (Implemented for Arrays)
+  relu( x: Array<Field> ): Array<Field> {
+    // RelU implementation for an Array
+    // Equivalent: result = max( x, 0 )
     let result = Array<Field>();
+    x.forEach( ( value, i ) => 
+      result[ i ] = Circuit.if( value.gt( 0 ), value, Field.zero ) 
+    );
+    return result;
+  }
 
-    // Necessary for the Pseudo Softmax
+  relu_leaky( x: Array<Field> ): Array<Field> {
+    // Leaky RelU implementation for an Array
+    let result = Array<Field>();
+    x.forEach( ( value, i ) => 
+      result[ i ] = Circuit.if( value.gt( 0 ), value, value.mul( this.alpha ) ) 
+    );
+    return result;
+  }
+
+  softmax( x: Array<Field> ): Array<Field> {
+    // Softmax Implementation for an Array
+    // Equivalent: result = exp(x) / / ( exp(x1) + .. + exp(xn) )
+    // TODO - implement with exp
+    return this.softmax_pseudo( x );
+  }
+
+  softmax_pseudo( x: Array<Field> ): Array<Field> {
+    // Pseudo Softmax Implementation for an Array
+    // Equivalent: result = x / ( x1 + .. + xn )
     let sum = Field.zero;
     x.forEach( value => sum = sum.add( value ) );
 
-    for ( let i = 0; i < x.length; i++ ) {
-      if ( this.activation == 'relu' ) {
-        // RelU Activation Function
-        result[ i ] = this.relu( x[ i ] );
-      } else if ( this.activation == 'relu_leaky' ) {
-        // Leaky RelU Activation Function
-        result[ i ] = this.relu_leaky( x[ i ] );
-      } else if ( this.activation == 'softmax_pseudo' )
-        // Pseudo Softmax Activation Function
-        // TODO: Use exp for true softmax implementation
-        result[ i ] = this.softmax_pseudo( x[ i ], sum )
+    let result = Array<Field>();
+    x.forEach( ( value, i ) => 
+      result[ i ] = value.div( sum )
+    );
+    return result;
+  }
+
+  // Math Helpers
+  transpose( x: Array<Field>[] ) {
+    // Transpose the matrix
+    let result = Array();
+    for ( let i = 0; i < x[0].length; i++ ) {
+      let m_array = Array<Field>();
+      for ( let j = 0; j < x.length; j++ ) {
+        m_array[ j ] = x[ j ][ i ]; 
+      }
+      result[ i ] = m_array;
     }
     return result;
   }
 
-  // Activation Functions
-  relu( x: Field ): Field {
-    // RelU implementation
-    return Circuit.if( x.gt( 0 ), x, Field.zero );
+  // Conversion from numbers to fields
+  @method num2field( x: Array<number>[] ) {
+  function num2field_array( x: Array<number>, decimal_multiplier: number ) {
+    // Convert array of numbers to array of fields
+    let result = Array<Field>();
+    // Multiple the number by the decimal multiplier and round before converting to Field
+    x.forEach( ( value, index ) => 
+      result[ index ] = Field( Math.round( value * decimal_multiplier ) )
+    )
+    return result;
   }
-
-  relu_leaky( x: Field, alpha = 0.01 ): Field {
-    // Leaky RelU implementation
-    return Circuit.if( x.gt( 0 ), x, x.mul( alpha ) );
-  }
-
-  softmax_pseudo( x: Field, sum: Field ): Field {
-    // Pseudo Softmax Implementation
-    return x.div( sum );
-  }
+  // Convert matrix of numbers to maxtrix of fields
+  let result = Array();
+  x.forEach( ( value, index ) => 
+    result[ index ] = num2field_array( value, this.decimal )
+  )
+  return result
 }
 
+}
 
 class SnarkyNet {
   layers: Array<SnarkyLayer>;         // Array of SnarkyLayer
@@ -124,43 +176,17 @@ class SnarkyNet {
     this.layers = layers;             // SnarkyJS Layers
   }
 
-  @method predict( inputs: Array<Field>[] ): Array<Field>[] {
+  @method predict( inputs: Array<number>[] ): Array<Field>[] {
     // Prediction method to run the model
     // Save initial inputs
-    let x = inputs; 
+    let x = this.layers[0].num2field( inputs ); 
+    
     // Call the SnarkyLayers
-    this.layers.forEach( ( layer ) => x = layer.call( x ) )
+    this.layers.forEach( ( layer ) => 
+      x = layer.call( x )
+    ); 
     return x;
   }
-}
-
-
-// Conversion from numbers to fields
-function num2field( x: Array<number>[] ) {
-  // Convert matrix of numbers to maxtrix of fields
-  function num2field_array( x: Array<number> ) {
-    // Convert array of numbers to array of fields
-    let result = Array<Field>();
-    x.forEach( ( value, index ) => result[ index ] = Field( value ) )
-    return result;
-  }
-  let result = Array();
-  x.forEach( ( value, index ) => result[ index ] = num2field_array( value ) )
-  return result
-}
-
-// Transpose
-function transpose( x: Array<Field>[] ) {
-  // Transpose the matrix
-  let result = Array();
-  for ( let i = 0; i < x[0].length; i++ ) {
-    let m_array = Array<Field>();
-    for ( let j = 0; j < x.length; j++ ) {
-      m_array[ j ] = x[ j ][ i ]; 
-    }
-    result[ i ] = m_array;
-  }
-  return result;
 }
 
 class SmartSnarkyNet extends SmartContract {
@@ -182,11 +208,15 @@ class SmartSnarkyNet extends SmartContract {
 
   @method async predict( input: Array<number>[] ) {
     // run the model and obtain the predictions
-    const prediction = this.model.predict( num2field( input ) );
-    console.log( prediction[0] );
+    const prediction = await this.model.predict( input );
+    console.log( prediction );
 
-    console.log( transpose( prediction ) );
-
+    prediction.forEach( ( value, index ) => 
+      value.forEach( data => 
+        console.log( data )
+        
+      )
+      );
   }
 }
 
@@ -206,7 +236,7 @@ export async function runSnarkNet() {
   const snappPubkey = snappPrivkey.toPublicKey();
 
   // weights for the model
-  let layers = [ new SnarkyLayer( [[0, 1], [1, 1], [1, 0]], 'relu' ) ];
+  let layers = [  new SnarkyLayer( [[1, 0, 0], [0, 1, 0], [0, 0, 1]], 'relu' ) ];
 
   // create an instance of the model
   let snappInstance: SmartSnarkyNet;
@@ -226,7 +256,7 @@ export async function runSnarkNet() {
 //////////////////////////////// Test 1 ////////////////////////////////
   console.log( 'Test 1 - Start:' );
   await Mina.transaction( account1, async () => {
-    await snappInstance.predict( [ [ 1, 1, 0 ] ] );
+    await snappInstance.predict( [  [ 511, 512, 513 ] ] );
     })
     .send()
     .wait()
