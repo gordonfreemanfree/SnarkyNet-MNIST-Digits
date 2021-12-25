@@ -14,8 +14,6 @@ import {
   State,
   isReady,
   Party,
-  Circuit,
-  Bool,
 } from 'snarkyjs';
 
 // Import Layer Weights
@@ -90,7 +88,7 @@ export async function runSnarkNet() {
     .wait();
     
 //////////////////////////////// Test 1 ////////////////////////////////
-  console.log( 'Test 1 - Start:' );
+  console.log( 'Test 1 - Start: Run prediction on image_4. Expected state of 64' );
   await Mina.transaction( account1, async () => {
     await snappInstance.predict( [ image_4 ] );
     })
