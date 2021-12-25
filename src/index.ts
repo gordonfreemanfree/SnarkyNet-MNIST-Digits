@@ -143,7 +143,7 @@ class SnarkyLayer {
   }
 
   // Matrix / Tensor Helpers
-  transpose( x: Array<Field>[] ) {
+  transpose( x: Array<Field>[] ): Array<Field>[] {
     // Transpose the rank 2 tensor
     let result = Array();
     for ( let i = 0; i < x[0].length; i++ ) {
@@ -161,12 +161,12 @@ class SnarkyLayer {
     // Convert rank 2 tensor of numbers to rank 2 tensor of fields
     let result = Array();
     x.forEach( ( value, index ) => 
-      result[ index ] = this.num2field_array( value )
+      result[ index ] = this.num2field_t1( value )
     )
     return result
   }
 
-  num2field_array( x: Array<number> ) {
+  num2field_t1( x: Array<number> ): Array<Field> {
     // Convert array of numbers to array of fields
     let result = Array<Field>();
     x.forEach( ( value, index ) => 
