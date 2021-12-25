@@ -12,7 +12,7 @@ class SnarkyTensor {
     this.decimal_multiplier = decimal_multiplier;
 
   }
-  
+
   // Description:   Perform a dot product for two rank 2 tensors of type Field
   // Input:         m1 - Rank 2 Tensor of type Field
   //                m2 - Rank 2 Tensor of type Field
@@ -86,7 +86,6 @@ class SnarkyTensor {
   // Input:         x - Rank 1 Tensor of type number
   // Output:        y - Rank 1 Tensor of type Field
   num2field_t1( x: Array<number> ): Array<Field> {
-    // Convert array of numbers to array of fields
     let y = Array<Field>();
     x.forEach( ( value, index ) => 
       y[ index ] = this.num2field( value )
@@ -98,7 +97,6 @@ class SnarkyTensor {
   // Input:         x - number
   // Output:        y - Field
   num2field( x: number ): Field {
-    // Obtain a Field representation of the value
     return Field( Math.round( x * this.decimal_multiplier ) ).div( this.decimal_multiplier )
   }
 }
