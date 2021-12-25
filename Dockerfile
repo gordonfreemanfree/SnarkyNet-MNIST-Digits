@@ -15,4 +15,4 @@ RUN npm install
 RUN npx tsc
 
 # Entry point
-ENTRYPOINT ["node", "build/index.js"]
+ENTRYPOINT ["node", "build/smart_snarkynet.js"]
