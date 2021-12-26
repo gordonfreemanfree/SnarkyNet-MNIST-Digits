@@ -10,17 +10,18 @@ import {
   method,
   Circuit,
   Bool,
+  UInt64,
 } from 'snarkyjs';
 
-import { SnarkyTensor } from './snarkytensor.js'
+import { SnarkyTensor } from './snarky_tensor.js'
 
 // create a callable layer
 // TODO - Make it callable 
 class SnarkyLayer extends SnarkyTensor {
-  weights:    Array<Field>[];       // weights
-  bias:       Array<Field>;         // bias
+  weights:    Array<UInt64>[];       // weights
+  bias:       Array<UInt64>;         // bias
   activation: Function;             // activation function
-  alpha:      Field;                // alpha value for leaky relu
+  alpha:      UInt64;                // alpha value for leaky relu
   decimal:    number;               // multiplier for decimals
 
   constructor( weights: Array<number>[], activation='relu', alpha=0.01 ) {
@@ -30,15 +31,16 @@ class SnarkyLayer extends SnarkyTensor {
     this.activation = this.activation_selection( activation );
 
     // Set alpha
-    this.alpha = this.num2field( alpha );
+    this.alpha = this.num2float( alpha );
 
     // Weights
-    this.weights = this.num2field_t2( weights );
+    this.weights = this.num2float_t2( weights );
   }
   
-  @method call( input:  Array<Field>[] ): Array<Field>[] {
+  @method call( input:  Array<UInt64>[] ): Array<UInt64>[] {
     // Dense layer implementation
     // Equivalent: output = activation( dot( input, weight ) )
+    console.log( 'Entering Call' )
     return this.activation_t2( this.dot_product_t2( input, this.weights ) );
   }
 
@@ -52,7 +54,7 @@ class SnarkyLayer extends SnarkyTensor {
   }
 
   // Activation 
-  activation_t2( x: Array<Field>[] ): Array<Field>[] {
+  activation_t2( x: Array<UInt64>[] ): Array<UInt64>[] {
     // Applying activation functions for a rank 2 tensor
     let result = Array();
     x.forEach( ( value, index ) => 
@@ -62,39 +64,41 @@ class SnarkyLayer extends SnarkyTensor {
   }
 
   // Activation Functions (implemented for rank 1 tensors)
-  relu_t1( x: Array<Field> ): Array<Field> {
+  relu_t1( x: Array<UInt64> ): Array<UInt64> {
     // RelU implementation for an Array
     // Equivalent: result = max( x, 0 )
-    let result = Array<Field>();
+    let result = Array<UInt64>();
+    console.log( 'RelU: ', x.toString )
     x.forEach( ( value, i ) => 
-      result[ i ] = Circuit.if( value.gt( 0 ), value, Field.zero ) 
+      result[ i ] = Circuit.if( value.gt( new UInt64( Field.zero ) ), value, new UInt64( Field.zero ) )
     );
     return result;
   }
 
-  relu_leaky_t1( x: Array<Field> ): Array<Field> {
+  relu_leaky_t1( x: Array<UInt64> ): Array<UInt64> {
     // Leaky RelU implementation for an Array
-    let result = Array<Field>();
+    let result = Array<UInt64>();
     x.forEach( ( value, i ) => 
-      result[ i ] = Circuit.if( value.gt( 0 ), value, value.mul( this.alpha ) ) 
+      result[ i ] = Circuit.if( value.gt( new UInt64( Field.zero ) ), value, value.mul( this.alpha ) )
     );
     return result;
   }
 
-  softmax_t1( x: Array<Field> ): Array<Field> {
+  softmax_t1( x: Array<UInt64> ): Array<UInt64> {
     // Softmax Implementation for an Array
     // Equivalent: result = exp(x) / / ( exp(x1) + .. + exp(xn) )
     // TODO - implement with exp
     return this.softmax_pseudo_t1( x );
   }
 
-  softmax_pseudo_t1( x: Array<Field> ): Array<Field> {
+  softmax_pseudo_t1( x: Array<UInt64> ): Array<UInt64> {
     // Pseudo Softmax Implementation for an Array
     // Equivalent: result = x / ( x1 + .. + xn )
-    let sum = Field.zero;
+    let sum = new UInt64( Field.zero );
     x.forEach( value => sum = sum.add( value ) );
+    console.log( 'Softmax: ', x.toString )
 
-    let result = Array<Field>();
+    let result = Array<UInt64>();
     x.forEach( ( value, i ) => 
       result[ i ] = value.div( sum )
     );
@@ -115,7 +119,7 @@ class SnarkyNet extends SnarkyTensor {
   @method predict( inputs: Array<number>[] ): Array<Bool> {
     // Prediction method to run the model
     // Step 1. Convert initial inputs to a 
-    let x = this.num2field_t2( inputs ); 
+    let x = this.num2float_t2( inputs ); 
     
     // Step 2. Call the SnarkyLayers
     this.layers.forEach( ( layer ) => 
@@ -124,25 +128,26 @@ class SnarkyNet extends SnarkyTensor {
 
     // Step 3. Return an array of Bool
     // Assume only one image is processed at a time
+    console.log( x[ 0 ] )
     return this.parse_classes( x[ 0 ] ) ;
   }
 
-  parse_classes( x: Array<Field> ) {
+  parse_classes( x: Array<UInt64> ) {
     // Return an array of Bool for the max class
     // TODO do this better
     // TODO add threshold? 
     
     // Step 1. Find the maximum classification
-    let max = Field.zero;
+    let max = new UInt64( Field.zero );
     x.forEach( ( value ) => 
-      max = Circuit.if( value.gte( max ), value, max )
+      max = Circuit.if( value.gt( max ), value, max )
     ); 
 
     // Step 2. Create the Bool array for the classes
     // True if it is the max value, False otherwise
     let result = Array<Bool>();
     x.forEach( ( value, index ) =>
-      result[ index ] = Circuit.if( value.gte( max ), Bool( true ), Bool( false ) )
+      result[ index ] = Circuit.if( value.gt( max ), Bool( true ), Bool( false ) )
     )
     return result;
   }

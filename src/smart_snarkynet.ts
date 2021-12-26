@@ -94,7 +94,7 @@ export async function runSnarkNet() {
     })
     .send()
     .wait()
-    .catch((e) => console.log(' Test 1 Failed.'));
+    .catch((e) => console.log(e));
   console.log( 'Test 1 - End.' );
   const a = await Mina.getAccount(snappPubkey);
   console.log('Class State:', a.snapp.appState[0].toString());
