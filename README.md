@@ -1,6 +1,6 @@
 # SnarkyNet - MNIST Handwritten Digits
 SnarkyJS implementation the Deep Neural Network for MNIST Handwritten Letters. <br>
-Proof of Concept / Work in Progress
+Proof of Concept / Work in Progress <br>
 Currently Not Functional
 
 ## Description
