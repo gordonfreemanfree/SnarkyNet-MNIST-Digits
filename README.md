@@ -41,8 +41,10 @@ model = keras.Sequential( [
 
 SnarkyNet:
 ```
-let layers = [  new SnarkyLayer( weights_l1, 'relu' ),
-                new SnarkyLayer( weights_l2, 'softmax' ) ];
+let layers = [  
+     new SnarkyLayer( weights_l1, 'relu' ),
+     new SnarkyLayer( weights_l2, 'softmax' ) 
+     ];
 ```
 
 where `weights_l1` and `weights_l2` correspond to the weights obtain from training of the 
