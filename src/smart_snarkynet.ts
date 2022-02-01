@@ -2,6 +2,7 @@
 // for the MNIST Handwritten Digits Dataset: http://yann.lecun.com/exdb/mnist/
 
 import {
+  Int64,
   UInt64,
   Field,
   shutdown,
@@ -25,9 +26,12 @@ import { image_4 } from './example_images.js';
 // Import SnarkyNet and SnarkyLayers
 import { SnarkyNet, SnarkyLayer } from './snarkynet.js'
 
+// Import Int64
+//import { Int64 } from './Int64.js';
+
 class SmartSnarkyNet extends SmartContract {
   // Field State to store the classification
-  @state(Field) state: State<Field>;  // stored state for classification 
+  @state(Int64) state: State<Int64>;  // stored state for classification 
 
   model: SnarkyNet;                   // model object
   reward_balance: UInt64;             // balance for the reward
@@ -39,7 +43,7 @@ class SmartSnarkyNet extends SmartContract {
     this.balance.addInPlace( this.reward_balance );
 
     // set the initial values
-    this.state = State.init( Field.zero );
+    this.state = State.init( new Int64( Field.zero ) );
 
     // set the model
     this.model = model;
@@ -48,7 +52,8 @@ class SmartSnarkyNet extends SmartContract {
   @method async predict( input: Array<number>[] ) {
     // run the model and obtain the predictions
     const prediction = await this.model.predict( input );
-    this.state.set( Field.ofBits( prediction ) );
+    //this.state.set( Field.ofBits( prediction ) );
+    this.state.set( prediction )
   }
 }
 
