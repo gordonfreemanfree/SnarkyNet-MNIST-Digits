@@ -5,7 +5,7 @@
 import { SnarkyTensor } from '../snarky_tensor.js'
 import { Field, isReady, shutdown } from 'snarkyjs';
 import { weights_l1, weights_l2 } from '../weights.js';
-import { Int64 } from '../Int64.js';
+import { Int65 } from '../Int65.js';
 
 // Wait for SnarkyJS
 await isReady;
@@ -14,54 +14,54 @@ await isReady;
 let st = new SnarkyTensor( );
 
 // Run verify tests
-// verify_Int64( )
+// verify_Int65( )
 //verify_field( )
 // verify_sfloat( )
 verify_num2float( )
 //verify_dot_product_t1( )
 //verify_dot_product_t2( )
 
-/////////////////////////// Verify Int64 Assumptions ///////////////////////////
-function verify_Int64( ) {
-    // Int64( Field( 1 ) )
-    console.log( 'Test Int64( Field( 1 ) )' )
-    console.log( ' Output: ', new Int64( Field( 1 ) ).toString() )
+/////////////////////////// Verify Int65 Assumptions ///////////////////////////
+function verify_Int65( ) {
+    // Int65( Field( 1 ) )
+    console.log( 'Test Int65( Field( 1 ) )' )
+    console.log( ' Output: ', new Int65( Field( 1 ), Field( 1 ) ).toString() )
 
-    // Int64( Field( 255 ) )
-    console.log( 'Test Int64( Field( 255 ) )' )
-    console.log( ' Output: ', new Int64( Field( 255 ) ).toString() )
+    // Int65( Field( 255 ) )
+    console.log( 'Test Int65( Field( 255 ) )' )
+    console.log( ' Output: ', new Int65( Field( 255 ), Field( 1 ) ).toString() )
 
-    // Int64( Field( 255 ) ).add( 1 )
-    console.log( 'Test Int64( Field( 255 ) ).add( 1 )' )
-    console.log( ' Output: ', new Int64( Field( 255 ) ).add( new Int64( Field( 1 ) ) ).toString() )
+    // Int65( Field( 255 ) ).add( 1 )
+    console.log( 'Test Int65( Field( 255 ) ).add( 1 )' )
+    console.log( ' Output: ', new Int65( Field( 255 ), Field( 1 ) ).add( new Int65( Field( 1 ), Field( 1 ) ) ).toString() )
 
-    // Int64( Field( 255 ) ).add( 2 )
-    console.log( 'Test Int64( Field( 255 ) ).add( 2 )' )
-    console.log( ' Output: ', new Int64( Field( 255 ) ).add( new Int64( Field( 2 ) ) ).toString() )
+    // Int65( Field( 255 ) ).add( 2 )
+    console.log( 'Test Int65( Field( 255 ) ).add( 2 )' )
+    console.log( ' Output: ', new Int65( Field( 255 ), Field( 1 ) ).add( new Int65( Field( 2 ), Field( 1 ) ) ).toString() )
 
-    // Int64( Field( 1 ) ).div( 4 )
-    console.log( 'Test Int64( Field( 1 ) ).div( 4 )' )
-    console.log( ' Output: ', new Int64( Field( 1 ) ).div( 4 ).toString() )
+    // Int65( Field( 1 ) ).div( 4 )
+    console.log( 'Test Int65( Field( 1 ) ).div( 4 )' )
+    console.log( ' Output: ', new Int65( Field( 1 ), Field( 1 ) ).div( new Int65( Field( 4 ), Field( 1 ) ) ).toString() )
 
-    // Int64( Field( 1 ) ).div( 4 ).mul( 4 )
-    console.log( 'Test Int64( Field( 1 ) ).div( 4 ).mul( 4 )' )
-    console.log( ' Output: ', new Int64( Field( 1 ) ).div( 4 ).mul( 4 ).toString() )
+    // Int65( Field( 1 ) ).div( 4 ).mul( 4 )
+    console.log( 'Test Int65( Field( 1 ) ).div( 4 ).mul( 4 )' )
+    console.log( ' Output: ', new Int65( Field( 1 ), Field( 1 ) ).div( new Int65( Field( 4 ), Field( 1 ) ) ).mul( new Int65( Field( 4 ), Field( 1 ) ) ).toString() )
 
-    // Int64( Field( 4 ) ).div( 16 ).mul( 4 )
-    console.log( 'Test Int64( Field( 4 ) ).div( 16 ).mul( 4 )' )
-    console.log( ' Output: ', new Int64( Field( 4 ) ).div( 16 ).mul( 4 ).toString() )
+    // Int65( Field( 4 ) ).div( 16 ).mul( 4 )
+    console.log( 'Test Int65( Field( 4 ) ).div( 16 ).mul( 4 )' )
+    console.log( ' Output: ', new Int65( Field( 4 ), Field( 1 ) ).div( new Int65( Field( 16 ), Field( 1 ) ) ).mul( new Int65( Field( 4 ), Field( 1 ) ) ).toString() )
 
-    // Int64( Field( 32 ) ).div( 16 ).mul( 4 ) 
-    console.log( 'Test Int64( Field( 32 ) ).div( 16 ).mul( 4 )' )
-    console.log( ' Output: ', new Int64( Field( 32 ) ).div( 16 ).mul( 4 ).toString() )
+    // Int65( Field( 32 ) ).div( 16 ).mul( 4 ) 
+    console.log( 'Test Int65( Field( 32 ) ).div( 16 ).mul( 4 )' )
+    console.log( ' Output: ', new Int65( Field( 32 ), Field( 1 ) ).div( new Int65( Field( 16 ), Field( 1 ) ) ).mul( new Int65( Field( 4 ), Field( 1 ) ) ).toString() )
 
-    // Int64( Field( 36 ) ).div( 16 ).mul( 4 )
-    console.log( 'Test Int64( Field( 36 ) ).div( 16 ).mul( 4 )' )
-    console.log( ' Output: ', new Int64( Field( 36 ) ).div( 16 ).mul( 4 ).toString() )
+    // Int65( Field( 36 ) ).div( 16 ).mul( 4 )
+    console.log( 'Test Int65( Field( 36 ) ).div( 16 ).mul( 4 )' )
+    console.log( ' Output: ', new Int65( Field( 36 ), Field( 1 ) ).div( new Int65( Field( 16 ), Field( 1 ) ) ).mul( new Int65( Field( 4 ), Field( 1 ) ) ).toString() )
 }
 
 
-/////////////////////////// Verify Int64 Assumptions ///////////////////////////
+/////////////////////////// Verify Int65 Assumptions ///////////////////////////
 function verify_field( ) {
     // Field( 1 )
     console.log( 'Test Field( 1 )' )
@@ -131,28 +131,28 @@ function verify_num2float( ) {
     console.log( ' Output: ', st.num2float( -1 ).toString() )
 
     // num2float( -1 ).mul( num2float( -1 ) )
-    console.log( 'Test num2float( -1 ).mul( num2float( -1 ) )' )
-    console.log( ' Output: ', st.num2float( -1 ).mul( -1 ).divMod( 256 )[0].toString() )
+    // console.log( 'Test num2float( -1 ).mul( num2float( -1 ) )' )
+    // console.log( ' Output: ', st.num2float( -1 ).mul( -1 ).divMod( 256 )[0].toString() )
 
     // num2float( 1 ).div( 4 )
-    console.log( 'Test num2float( 1 ).div( 4 )' )
-    console.log( ' Output: ', st.num2float( 1 ).div( 4 ).toString() )
+    // console.log( 'Test num2float( 1 ).div( 4 )' )
+    // console.log( ' Output: ', st.num2float( 1 ).div( 4 ).toString() )
 
     // num2float( 1 ).div( 4 ).mul( 4 )
-    console.log( 'Test num2float( 1 ).div( 4 ).mul( 4 )' )
-    console.log( ' Output: ', st.num2float( 1 ).div( 4 ).mul( 4 ).toString() )
+    // console.log( 'Test num2float( 1 ).div( 4 ).mul( 4 )' )
+    // console.log( ' Output: ', st.num2float( 1 ).div( 4 ).mul( 4 ).toString() )
 
     // num2float( 4 ).div( 16 ).mul( 4 )
-    console.log( 'Test num2float( 4 ).div( 16 ).mul( 4 )' )
-    console.log( ' Output: ', st.num2float( 4 ).div( 16 ).mul( 4 ).toString() )
+    // console.log( 'Test num2float( 4 ).div( 16 ).mul( 4 )' )
+    // console.log( ' Output: ', st.num2float( 4 ).div( 16 ).mul( 4 ).toString() )
 
     // num2float( 0.25 )
-    console.log( 'Test num2float( 0.25 )' )
-    console.log( ' Output: ', st.num2float( 0.25 ).toString() )
+    // console.log( 'Test num2float( 0.25 )' )
+    // console.log( ' Output: ', st.num2float( 0.25 ).toString() )
 
     // num2float( 0.25 ).mul( 4 )
-    console.log( 'Test num2float( 0.25 ).mul( 4 )' )
-    console.log( ' Output: ', st.num2float( 0.25 ).mul( 4 ).toString() )
+    // console.log( 'Test num2float( 0.25 ).mul( 4 )' )
+    // console.log( ' Output: ', st.num2float( 0.25 ).mul( 4 ).toString() )
 
     // num2float( 0.25 ).mul( num2float( 0.25 ) )
     //console.log( 'Test num2float( 0.25 ).mul( num2float( 0.25 ) )' )
@@ -162,11 +162,17 @@ function verify_num2float( ) {
     //console.log( 'Test num2float( 0.25 ).mul( num2float( 0.25 ) ).div( decimal_multipler )' )
     // console.log( ' Output: ', st.num2float( 0.25 ).mul( st.num2float( 0.25 ) ).div( st.decimal_multiplier ).toString() )
 
+    // Crash - lower fidelity
+    // -0.7308298349380493 0.05408422648906708
+    // num2float( 0.05408422648906708 ).mul( num2float( -0.7308298349380493 ) )
+    // console.log( 'Test Lower Fidelity - num2float( 0.05408422648906708 ).mul( num2float( -0.7308298349380493 ) ).div( decimal_multipler )' )
+    // console.log( ' Output: ', st.num2float( 0.05408 ).mul( st.num2float( -0.73082 ) ).div( st.decimal_multiplier ).toString() )
+
     // Crash
     // -0.7308298349380493 0.05408422648906708
     // num2float( 0.05408422648906708 ).mul( num2float( -0.7308298349380493 ) )
-    console.log( 'Test num2float( 0.05408422648906708 ).mul( num2float( -0.7308298349380493 ) ).div( decimal_multipler )' )
-    console.log( ' Output: ', st.num2float( 0.05408422648906708 ).mul( st.num2float( -0.7308298349380493 ) ).div( st.decimal_multiplier ).toString() )
+    // console.log( 'Test num2float( 0.05408422648906708 ).mul( num2float( -0.7308298349380493 ) ).div( decimal_multipler )' )
+    // console.log( ' Output: ', st.num2float( 0.05408422648906708 ).mul( st.num2float( -0.7308298349380493 ) ).div( st.decimal_multiplier ).toString() )
 
     // -0.7308298349380493 0.05408422648906708
     // num2float( 0.05408422648906708 ).mul( num2float( -0.7308298349380493 ) )
@@ -181,7 +187,7 @@ function verify_num2float( ) {
 }
 
 //////////////////////////////// Test dot_product_t1 ////////////////////////////////
-function vector2string( v: Array<Int64> | Array<Field> | Array<number> ): Array<string> {
+function vector2string( v: Array<Int65> | Array<Field> | Array<number> ): Array<string> {
     let output = Array();
     v.forEach( ( value, i ) => 
         output[ i ] = value.toString() )
@@ -211,7 +217,7 @@ function verify_dot_product_t1( ) {
 
 //////////////////////////////// Test dot_product_t2 ////////////////////////////////
 function verify_dot_product_t2( ) {
-    function matrix2string( v: Array<Int64>[] | Array<Field>[] | Array<number>[]  ) {
+    function matrix2string( v: Array<Int65>[] | Array<Field>[] | Array<number>[]  ) {
         v.forEach( ( value, i ) => 
             console.log(  vector2string( value ) ) )
     }

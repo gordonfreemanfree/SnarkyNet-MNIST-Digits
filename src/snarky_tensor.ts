@@ -2,23 +2,25 @@
 export { SnarkyTensor };
 
 import { Field } from 'snarkyjs';
-import { Int64 } from './Int64.js';
+import { Int65 } from './Int65.js';
 
 
 class SnarkyTensor {
-  // multiplier for decimal conversion for number to Int64 conversions
-  decimal_multiplier:   number;   
+  // multiplier for decimal conversion for number to Int65 conversions
+  decimal_multiplier:   number;
+  decimal_multiplier_int65: Int65;   
 
   constructor( power = 8 ) {
     // Multiplier for representing decimals
     this.decimal_multiplier = Math.pow( 2, power );
+    this.decimal_multiplier_int65 = new Int65( new Field( this.decimal_multiplier ), new Field( 1 ) );
   }
 
-  // Description:   Perform a dot product for two rank 2 tensors of type Int64
-  // Input:         m1 - Rank 2 Tensor of type Int64
-  //                m2 - Rank 2 Tensor of type Int64
-  // Output:        y - Dot product Rank 2 Tensor of type Int64
-  dot_product_t2( m1: Array<Int64>[], m2: Array<Int64>[] ): Array<Int64>[] {
+  // Description:   Perform a dot product for two rank 2 tensors of type Int65
+  // Input:         m1 - Rank 2 Tensor of type Int65
+  //                m2 - Rank 2 Tensor of type Int65
+  // Output:        y - Dot product Rank 2 Tensor of type Int65
+  dot_product_t2( m1: Array<Int65>[], m2: Array<Int65>[] ): Array<Int65>[] {
     // Perform a dot product on the two rank 2 tensors
     let y = Array();
     let m2_t = this.transpose( m2 );
@@ -32,22 +34,22 @@ class SnarkyTensor {
     return y;
   }
 
-  // Description:   Perform a dot product for two rank 1 tensors of type Int64
-  // Input:         m1 - Rank 1 Tensor of type Int64
-  //                m2 - Rank 1 Tensor of type Int64
-  // Output:        y - Dot product Rank 0 Tensor of type Int64
-  dot_product_t1( v1: Array<Int64>, v2: Array<Int64> ): Int64 {
-    let y = new Int64( Field.zero );
+  // Description:   Perform a dot product for two rank 1 tensors of type Int65
+  // Input:         m1 - Rank 1 Tensor of type Int65
+  //                m2 - Rank 1 Tensor of type Int65
+  // Output:        y - Dot product Rank 0 Tensor of type Int65
+  dot_product_t1( v1: Array<Int65>, v2: Array<Int65> ): Int65 {
+    let y = new Int65( Field.zero, new Field( 1 ) );
     v1.forEach( ( v1_value, i ) => 
-      y = y.add( v1_value.mul( v2[ i ] ) ).divMod( this.decimal_multiplier )[0]
+      y = y.add( v1_value.mul( v2[ i ] ) ).div( this.decimal_multiplier_int65 )
     );
     return y;
   }
 
-  // Description:   Transpose a rank 2 tensor of type Int64
-  // Input:         x - Rank 2 Tensor of type Int64
-  // Output:        y - Transposed Rank 2 Tensor of type Int64 of x
-  transpose( x: Array<Int64>[] ): Array<Int64>[] {
+  // Description:   Transpose a rank 2 tensor of type Int65
+  // Input:         x - Rank 2 Tensor of type Int65
+  // Output:        y - Transposed Rank 2 Tensor of type Int65 of x
+  transpose( x: Array<Int65>[] ): Array<Int65>[] {
     // Transpose the rank 2 tensor
     let y = Array();
     for ( let i = 0; i < x[0].length; i++ ) {
@@ -61,21 +63,21 @@ class SnarkyTensor {
   }
 
   // Description:   Calculate the expotential
-  // Input:         x - Rank 0 Tensor of type Int64 for the power
-  // Output:        y - Rank 0 Tensor of type Int64 result of calculation
-  exp( x: Int64 ): Int64 {
+  // Input:         x - Rank 0 Tensor of type Int65 for the power
+  // Output:        y - Rank 0 Tensor of type Int65 result of calculation
+  exp( x: Int65 ): Int65 {
     // Expotential Implementation
-    // Int64 representation of e
+    // Int65 representation of e
     let e = this.num2float( 2.71828 )
-    // TODO - need to determine how to do a power to a Int64 decimal?
+    // TODO - need to determine how to do a power to a Int65 decimal?
     let y = e;
     return y
   }
 
   // Description:   Convert a Rank 2 Tensor of numbers to Rank 2 Tensor of Int64s
   // Input:         x - Rank 2 Tensor of type number
-  // Output:        y - Rank 2 Tensor of type Int64
-  num2float_t2( x: Array<number>[] ): Array<Int64>[] {
+  // Output:        y - Rank 2 Tensor of type Int65
+  num2float_t2( x: Array<number>[] ): Array<Int65>[] {
     let y = Array();
     x.forEach( ( value, index ) => 
       y[ index ] = this.num2float_t1( value )
@@ -85,8 +87,8 @@ class SnarkyTensor {
 
   // Description:   Convert a Rank 1 Tensor of numbers to Rank 1 Tensor of Int64s
   // Input:         x - Rank 1 Tensor of type number
-  // Output:        y - Rank 1 Tensor of type Int64
-  num2float_t1( x: Array<number> ): Array<Int64> {
+  // Output:        y - Rank 1 Tensor of type Int65
+  num2float_t1( x: Array<number> ): Array<Int65> {
     let y = Array();
     x.forEach( ( value, index ) => 
       y[ index ] = this.num2float( value )
@@ -94,10 +96,15 @@ class SnarkyTensor {
     return y;
   }
 
-  // Description:   Convert number to a Int64 taking in account the decimals, if applicable
+  // Description:   Convert number to a Int65 taking in account the decimals, if applicable
   // Input:         x - number
-  // Output:        y - Int64
-  num2float( x: number ): Int64 {
-    return new Int64( Field( Math.floor( x * this.decimal_multiplier ) ) )
+  // Output:        y - Int65
+  num2float( x: number ): Int65 {
+    if ( x > 0 ) {
+      return new Int65( Field( Math.floor( x * this.decimal_multiplier ) ), Field( 1 ) )
+    }
+    else {
+      return new Int65( Field( Math.floor( x * this.decimal_multiplier ) ), Field( -1 ) )
+    }
   }
 }

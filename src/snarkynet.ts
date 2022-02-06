@@ -13,16 +13,16 @@ import {
 } from 'snarkyjs';
 
 import { SnarkyTensor } from './snarky_tensor.js'
-import { Int64 } from './Int64.js';
+import { Int65 } from './Int65.js';
 
 // create a callable layer
 // TODO - Make it callable 
 class SnarkyLayer extends SnarkyTensor {
-  weights:    Array<Int64>[];      // weights
+  weights:    Array<Int65>[];      // weights
   activation: Function;             // activation function
-  alpha:      Int64;               // alpha value for leaky relu
+  alpha:      Int65;               // alpha value for leaky relu
   decimal:    number;               // multiplier for decimals
-  zero:       Int64;               // zero
+  zero:       Int65;               // zero
 
   constructor( weights: Array<number>[], activation='relu', alpha=0.01 ) {
   super()    
@@ -31,7 +31,7 @@ class SnarkyLayer extends SnarkyTensor {
     this.activation = this.activation_selection( activation );
     
     // Set zero
-    this.zero = new Int64( Field.zero );
+    this.zero = new Int65( Field.zero, new Field( 1 ) );
 
     // Set alpha
     this.alpha = this.num2float( alpha );
@@ -40,7 +40,7 @@ class SnarkyLayer extends SnarkyTensor {
     this.weights = this.num2float_t2( weights );
   }
   
-  @method call( input:  Array<Int64>[] ): Array<Int64>[] {
+  @method call( input:  Array<Int65>[] ): Array<Int65>[] {
     // Dense layer implementation
     // Equivalent: output = activation( dot( input, weight ) )
     return this.activation_t2( this.dot_product_t2( input, this.weights ) );
@@ -56,7 +56,7 @@ class SnarkyLayer extends SnarkyTensor {
   }
 
   // Activation 
-  activation_t2( x: Array<Int64>[] ): Array<Int64>[] {
+  activation_t2( x: Array<Int65>[] ): Array<Int65>[] {
     // Applying activation functions for a rank 2 tensor
     let result = Array();
     x.forEach( ( value, index ) => 
@@ -66,21 +66,21 @@ class SnarkyLayer extends SnarkyTensor {
   }
 
   // Activation Functions (implemented for rank 1 tensors)
-  relu_t1( x: Array<Int64> ): Array<Int64> {
+  relu_t1( x: Array<Int65> ): Array<Int65> {
     // RelU implementation for an Array
     // Equivalent: result = max( x, 0 )
     let result = Array();
     x.forEach( ( value, i ) => 
-      result[ i ] = Circuit.if( value.gt( this.zero ), value, this.zero )
+      result[ i ] = Circuit.if( value.sign.equals(Field.one).toBoolean(), value, this.zero )
     );
     return result;
   }
 
-  relu_leaky_t1( x: Array<Int64> ): Array<Field> {
+  relu_leaky_t1( x: Array<Int65> ): Array<Field> {
     // Leaky RelU implementation for an Array
     let result = Array();
     x.forEach( ( value, i ) => 
-      result[ i ] = Circuit.if( value.gt( this.zero ), value, value.mul( this.alpha ) )
+      result[ i ] = Circuit.if( value.sign.equals(Field.one).toBoolean(), value, value.mul( this.alpha ) )
     );
     return result;
   }
@@ -116,7 +116,7 @@ class SnarkyNet extends SnarkyTensor {
     this.layers = layers;             // SnarkyJS Layers
   }
 
-  @method predict( inputs: Array<number>[] ): Int64 {
+  @method predict( inputs: Array<number>[] ): Int65 {
     // Prediction method to run the model
     // Step 1. Convert initial inputs to a float
     let x = this.num2float_t2( inputs ); 

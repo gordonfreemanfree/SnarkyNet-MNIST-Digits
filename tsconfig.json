@@ -12,6 +12,7 @@
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
+    "useUnknownInCatchVariables": false,
     "strictPropertyInitialization": false
   },
   "exclude": [
