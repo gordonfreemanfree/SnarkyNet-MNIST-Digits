@@ -13,7 +13,7 @@ class SnarkyTensor {
   constructor( power = 8 ) {
     // Multiplier for representing decimals
     this.decimal_multiplier = Math.pow( 2, power );
-    this.decimal_multiplier_int65 = new Int65( new Field( this.decimal_multiplier ), new Field( 1 ) );
+    this.decimal_multiplier_int65 = Int65.fromNumber( this.decimal_multiplier );
   }
 
   // Description:   Perform a dot product for two rank 2 tensors of type Int65
@@ -39,9 +39,9 @@ class SnarkyTensor {
   //                m2 - Rank 1 Tensor of type Int65
   // Output:        y - Dot product Rank 0 Tensor of type Int65
   dot_product_t1( v1: Array<Int65>, v2: Array<Int65> ): Int65 {
-    let y = new Int65( Field.zero, new Field( 1 ) );
+    let y = Int65.zero;
     v1.forEach( ( v1_value, i ) => 
-      y = y.add( v1_value.mul( v2[ i ] ) ).div( this.decimal_multiplier_int65 )
+      y = y.add( v1_value.mul( v2[ i ] ).div( this.decimal_multiplier_int65 ) )
     );
     return y;
   }
@@ -96,15 +96,11 @@ class SnarkyTensor {
     return y;
   }
 
-  // Description:   Convert number to a Int65 taking in account the decimals, if applicable
+  // Description:   Convert number to a Int65 by multiplying it by the multiplier and 
+  // taking the floor
   // Input:         x - number
   // Output:        y - Int65
   num2float( x: number ): Int65 {
-    if ( x > 0 ) {
-      return new Int65( Field( Math.floor( x * this.decimal_multiplier ) ), Field( 1 ) )
-    }
-    else {
-      return new Int65( Field( Math.floor( x * this.decimal_multiplier ) ), Field( -1 ) )
-    }
+    return Int65.fromNumber( Math.floor( x * this.decimal_multiplier ) );    
   }
 }
