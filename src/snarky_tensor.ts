@@ -23,7 +23,7 @@ class SnarkyTensor {
   dot_product_t2( m1: Array<Int65>[], m2: Array<Int65>[] ): Array<Int65>[] {
     // Perform a dot product on the two rank 2 tensors
     let y = Array();
-    let m2_t = m2
+    let m2_t = this.transpose( m2 );
     for ( let i = 0; i < m1.length; i++ ) {
       let m_array = Array();
       for ( let j = 0; j < m2_t.length; j++ ) {
