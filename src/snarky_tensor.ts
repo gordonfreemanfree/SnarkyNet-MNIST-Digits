@@ -12,7 +12,7 @@ class SnarkyTensor {
 
   constructor( power = 8 ) {
     // Multiplier for representing decimals
-    this.decimal_multiplier = Math.pow( 2, power );
+    this.decimal_multiplier = Math.pow( 10, power );
     this.decimal_multiplier_int65 = Int65.fromNumber( this.decimal_multiplier );
   }
 
@@ -23,7 +23,7 @@ class SnarkyTensor {
   dot_product_t2( m1: Array<Int65>[], m2: Array<Int65>[] ): Array<Int65>[] {
     // Perform a dot product on the two rank 2 tensors
     let y = Array();
-    let m2_t = this.transpose( m2 );
+    let m2_t = m2
     for ( let i = 0; i < m1.length; i++ ) {
       let m_array = Array();
       for ( let j = 0; j < m2_t.length; j++ ) {
@@ -40,6 +40,7 @@ class SnarkyTensor {
   // Output:        y - Dot product Rank 0 Tensor of type Int65
   dot_product_t1( v1: Array<Int65>, v2: Array<Int65> ): Int65 {
     let y = Int65.zero;
+    console.assert( v1.length === v2.length );
     v1.forEach( ( v1_value, i ) => 
       y = y.add( v1_value.mul( v2[ i ] ).div( this.decimal_multiplier_int65 ) )
     );

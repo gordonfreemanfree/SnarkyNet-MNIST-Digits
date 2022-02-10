@@ -60,6 +60,10 @@ export async function runSnarkNet() {
   // Wait for it to be ready
   await isReady;
 
+  // get current time
+  let startTime = new Date().getTime() / 1000;
+  console.log( 'Ready' );
+
   // Local instance of Mina
   const Local = Mina.LocalBlockchain();
   Mina.setActiveInstance(Local);
@@ -72,13 +76,17 @@ export async function runSnarkNet() {
   const snappPubkey = snappPrivkey.toPublicKey();
 
   // weights for the model
+  console.log( 'Create Layers', new Date().getTime() / 1000 - startTime );
   let layers = [  new SnarkyLayer( weights_l1, 'relu' ),
                   new SnarkyLayer( weights_l2, 'softmax' ) ];
 
   // create an instance of the model
+  console.log( 'Create SNAPP Instance', new Date().getTime() / 1000 - startTime );
+
   let snappInstance: SmartSnarkyNet;
 
   // Deploys the snapp
+  console.log( 'Deploy the SNAPP', new Date().getTime() / 1000 - startTime );
   await Mina.transaction(account1, async () => {
     // account2 sends 1000000000 to the new snapp account
     const amount = UInt64.fromNumber(1000000000);
@@ -86,20 +94,21 @@ export async function runSnarkNet() {
     p.balance.subInPlace(amount);
 
     // deploy the SNAPP with the weights
+    console.log( 'Deploy SnarkyNet', new Date().getTime() / 1000 - startTime );
     snappInstance = new SmartSnarkyNet(amount, snappPubkey, new SnarkyNet( layers ) );
   })
     .send()
     .wait();
     
 //////////////////////////////// Test 1 ////////////////////////////////
-  console.log( 'Test 1 - Start: Run prediction on image_4. Expected state of 64' );
+  console.log( 'Test 1 - Start: Run prediction on image_4:', new Date().getTime() / 1000 - startTime );
   await Mina.transaction( account1, async () => {
     await snappInstance.predict( [ image_4 ] );
     })
     .send()
     .wait()
     .catch((e) => console.log(e));
-  console.log( 'Test 1 - End.' );
+  console.log( 'Test 1 - End', new Date().getTime() / 1000 - startTime );
   const a = await Mina.getAccount(snappPubkey);
   console.log('Class State:', a.snapp.appState[0].toString());
 
@@ -108,4 +117,6 @@ export async function runSnarkNet() {
   shutdown();
 }
 
-runSnarkNet();
+console.log( 'Start' );
+await runSnarkNet();
+console.log( 'End' );
