@@ -29,9 +29,6 @@ class SnarkyLayer extends SnarkyTensor {
 
     // Activation Function 
     this.activation = this.activation_selection( activation );
-    
-    // Set zero
-    this.zero = new Int65( Field.zero, new Field( 1 ) );
 
     // Set alpha
     this.alpha = this.num2float( alpha );
@@ -71,7 +68,7 @@ class SnarkyLayer extends SnarkyTensor {
     // Equivalent: result = max( x, 0 )
     let result = Array();
     x.forEach( ( value, i ) => 
-      result[ i ] = Circuit.if( value.sign.equals(Field.one).toBoolean(), value, this.zero )
+      result[ i ] = Circuit.if( value.sign.equals(Field.one).toBoolean(), value, Int65.zero )
     );
     return result;
   }
@@ -85,20 +82,21 @@ class SnarkyLayer extends SnarkyTensor {
     return result;
   }
 
-  softmax_t1( x: Array<Field> ): Array<Field> {
+  softmax_t1( x: Array<Int65> ): Array<Int65> {
     // Softmax Implementation for an Array
     // Equivalent: result = exp(x) / / ( exp(x1) + .. + exp(xn) )
     // TODO - implement with exp
     return this.softmax_pseudo_t1( x );
   }
 
-  softmax_pseudo_t1( x: Array<Field> ): Array<Field> {
+  softmax_pseudo_t1( x: Array<Int65> ): Array<Int65> {
     // Pseudo Softmax Implementation for an Array
     // Equivalent: result = x / ( x1 + .. + xn )
-    let sum = new Field( Field.zero );
+    let sum = Int65.zero;
     x.forEach( value => sum = sum.add( value ) );
-
-    let result = Array<Field>();
+    console.log( 'TODO: Implement Softmax. Below are the values for the inputs to softmax.' )
+    x.forEach( value => console.log( value.toString() ) );
+    let result = Array<Int65>();
     x.forEach( ( value, i ) => 
       result[ i ] = value.div( sum )
     );
@@ -128,8 +126,7 @@ class SnarkyNet extends SnarkyTensor {
 
     // Step 3. Return an array of Bool
     // Assume only one image is processed at a time
-    //return this.parse_classes( x[ 0 ] ) ;
-    console.log( x[ 0 ][ 4 ] )
+    //return this.parse_classes( x[ 0 ] ) ; // TODO 
     return x[ 0 ][ 4 ]
   }
 

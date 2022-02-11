@@ -187,7 +187,7 @@ function verify_num2float( ) {
 
     // num2float( 0.25 ).mul( num2float( 0.25 ) )
     console.log( 'Test num2float( 0.25 ).mul( num2float( 0.25 ) ).div( decimal_multipler )' )
-    console.log( ' Output: ', st.num2float( 0.25 ).mul( st.num2float( 0.25 ) ).div( st.decimal_multiplier_int65 ).toString() )
+    console.log( ' Output: ', st.num2float( 0.25 ).mul( st.num2float( 0.25 ) ).div( st.scale_factor_int65 ).toString() )
 
     // Previous Crash
     // -0.7308298349380493 0.05408422648906708

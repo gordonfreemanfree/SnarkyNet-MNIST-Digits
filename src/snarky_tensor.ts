@@ -7,13 +7,13 @@ import { Int65 } from './Int65.js';
 
 class SnarkyTensor {
   // multiplier for decimal conversion for number to Int65 conversions
-  decimal_multiplier:   number;
-  decimal_multiplier_int65: Int65;   
+  scale_factor:   number;
+  scale_factor_int65: Int65;   
 
   constructor( power = 8 ) {
     // Multiplier for representing decimals
-    this.decimal_multiplier = Math.pow( 10, power );
-    this.decimal_multiplier_int65 = Int65.fromNumber( this.decimal_multiplier );
+    this.scale_factor = Math.pow( 10, power );
+    this.scale_factor_int65 = Int65.fromNumber( this.scale_factor );
   }
 
   // Description:   Perform a dot product for two rank 2 tensors of type Int65
@@ -40,9 +40,9 @@ class SnarkyTensor {
   // Output:        y - Dot product Rank 0 Tensor of type Int65
   dot_product_t1( v1: Array<Int65>, v2: Array<Int65> ): Int65 {
     let y = Int65.zero;
-    console.assert( v1.length === v2.length );
+    console.assert( v1.length === v2.length ); // TODO - throw 
     v1.forEach( ( v1_value, i ) => 
-      y = y.add( v1_value.mul( v2[ i ] ).div( this.decimal_multiplier_int65 ) )
+      y = y.add( v1_value.mul( v2[ i ] ).div( this.scale_factor_int65 ) )
     );
     return y;
   }
@@ -97,11 +97,11 @@ class SnarkyTensor {
     return y;
   }
 
-  // Description:   Convert number to a Int65 by multiplying it by the multiplier and 
-  // taking the floor
+  // Description:   Convert number to a Int65 by multiplying it by the 
+  // scale factor and taking the floor
   // Input:         x - number
   // Output:        y - Int65
   num2float( x: number ): Int65 {
-    return Int65.fromNumber( Math.floor( x * this.decimal_multiplier ) );    
+    return Int65.fromNumber( Math.floor( x * this.scale_factor ) );    
   }
 }
