@@ -42,7 +42,7 @@ class SmartSnarkyNet extends SmartContract {
     this.balance.addInPlace( this.reward_balance );
 
     // set the initial values
-    this.state = State.init( new Int65( Field.zero, new Field( 1 ) ) );
+    this.state = State.init( Int65.zero );
 
     // set the model
     this.model = model;
@@ -51,7 +51,6 @@ class SmartSnarkyNet extends SmartContract {
   @method async predict( input: Array<number>[] ) {
     // run the model and obtain the predictions
     const prediction = await this.model.predict( input );
-    //this.state.set( Field.ofBits( prediction ) );
     this.state.set( prediction )
   }
 }

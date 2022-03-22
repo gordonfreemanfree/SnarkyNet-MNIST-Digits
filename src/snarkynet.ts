@@ -15,8 +15,7 @@ import {
 import { SnarkyTensor } from './snarky_tensor.js'
 import { Int65 } from './Int65.js';
 
-// create a callable layer
-// TODO - Make it callable 
+// create a layer
 class SnarkyLayer extends SnarkyTensor {
   weights:    Array<Int65>[];      // weights
   activation: Function;             // activation function
@@ -84,23 +83,15 @@ class SnarkyLayer extends SnarkyTensor {
 
   softmax_t1( x: Array<Int65> ): Array<Int65> {
     // Softmax Implementation for an Array
-    // Equivalent: result = exp(x) / / ( exp(x1) + .. + exp(xn) )
-    // TODO - implement with exp
-    return this.softmax_pseudo_t1( x );
-  }
-
-  softmax_pseudo_t1( x: Array<Int65> ): Array<Int65> {
-    // Pseudo Softmax Implementation for an Array
-    // Equivalent: result = x / ( x1 + .. + xn )
     let sum = Int65.zero;
-    x.forEach( value => sum = sum.add( value ) );
-    console.log( 'TODO: Implement Softmax. Below are the values for the inputs to softmax.' )
-    x.forEach( value => console.log( value.toString() ) );
     let result = Array<Int65>();
+    // Equivalent: result = x / ( x1 + .. + xn )
+    // result returned as percentage
+    x.forEach( value => sum = sum.add( this.exp( value ) ) );
     x.forEach( ( value, i ) => 
-      result[ i ] = value.div( sum )
+      result[ i ] = this.exp( value ).div( sum ).mul( Int65.fromNumber( Math.pow( 10, 2 ) ) )
     );
-    return x;
+    return result;
   }
 }
 
@@ -124,36 +115,23 @@ class SnarkyNet extends SnarkyTensor {
       x = layer.call( x )
     ); 
 
-    // Step 3. Return an array of Bool
-    // Assume only one image is processed at a time
-    //return this.parse_classes( x[ 0 ] ) ; // TODO 
-    return x[ 0 ][ 4 ]
+    // Step 3. Parse Classes
+    this.parse_classes( x[0] )
+    return Int65.zero
   }
 
-  parse_classes( x: Array<Field> ) {
-    // Return an array of Bool for the max class
-    // TODO do this better
-    // TODO add threshold? 
-    
-    // Step 1. Find the maximum classification
-    let max = new Field( Field.zero );
-    x.forEach( ( value ) => 
-      max = Circuit.if( value.gt( max ), value, max )
-    ); 
-    x.forEach( ( value ) => 
-      console.log( Circuit.if( value.gt( 0 ), value, value.neg() ) )
-    ); 
+  parse_classes( x: Array<Int65> ): Array<Bool> {
+    // Return an array of Bool if it exceeds the threshold
+    let output = Array<Bool>();
 
-    // Step 2. Create the Bool array for the classes
-    // True if it is the max value, False otherwise
-    console.log( ' - Results - ')
-    let result = Array<Bool>();
-    x.forEach( ( value, index ) =>
-      result[ index ] = Circuit.if( value.equals( max ), Bool( true ), Bool( false ) )
-    )
-    result.forEach( ( value ) => 
-      console.log( value )
-    ); 
-    return result;
+    // determine if values exceed the threshold
+    let max = Int65.fromNumber( 90 );
+    console.log( ' - Results - ' )
+    for (let i = 0; i < x.length; i++) {
+      console.log( 'Classification of', i, ': ', x[i].toString(), '%' )
+      let delta = x[i].sub( max );
+      output[i] = Circuit.if( delta.sign.equals(Field.one).toBoolean(), Bool(true), Bool(false) )
+    }
+    return output;
   }
 }

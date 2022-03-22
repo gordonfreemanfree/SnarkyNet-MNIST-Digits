@@ -1,9 +1,7 @@
 // Description: SnarkyTensor allows for the methods utilized for manipulating tensors
 export { SnarkyTensor };
 
-import { Field } from 'snarkyjs';
 import { Int65 } from './Int65.js';
-
 
 class SnarkyTensor {
   // multiplier for decimal conversion for number to Int65 conversions
@@ -68,11 +66,8 @@ class SnarkyTensor {
   // Output:        y - Rank 0 Tensor of type Int65 result of calculation
   exp( x: Int65 ): Int65 {
     // Expotential Implementation
-    // Int65 representation of e
-    let e = this.num2float( 2.71828 )
-    // TODO - need to determine how to do a power to a Int65 decimal?
-    let y = e;
-    return y
+    let y = Math.exp( Number( x.toString() ) / this.scale_factor )
+    return Int65.fromNumber( Math.floor( y * this.scale_factor ) );  
   }
 
   // Description:   Convert a Rank 2 Tensor of numbers to Rank 2 Tensor of Int64s
