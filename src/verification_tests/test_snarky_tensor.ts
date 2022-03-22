@@ -3,7 +3,7 @@
 //////////////////////////// Configure and Setup ////////////////////////////////
 // Import SnarkyNet and SnarkyLayers
 import { SnarkyTensor } from '../snarky_tensor.js'
-import { Field, isReady, shutdown } from 'snarkyjs';
+import { Field, Bool, UInt64, Circuit, isReady, shutdown } from 'snarkyjs';
 import { weights_l1, weights_l2 } from '../weights.js';
 import { Int65 } from '../Int65.js';
 
@@ -14,11 +14,11 @@ await isReady;
 let st = new SnarkyTensor( );
 
 // Run verify tests
-verify_Int65( )
-// verify_field( )
-verify_num2float( )
-verify_dot_product_t1( )
-verify_dot_product_t2( )
+// verify_Int65( )
+// verify_num2float( )
+// verify_dot_product_t1( )
+// verify_dot_product_t2( )
+verify_exp( )
 
 /////////////////////////// Verify Int65 Assumptions ///////////////////////////
 function verify_Int65( ) {
@@ -66,89 +66,26 @@ function verify_Int65( ) {
 }
 
 
-/////////////////////////// Verify Field Assumptions ///////////////////////////
-function verify_field( ) {
-    // Field( 1 )
-    console.log( 'Test Field( 1 )' )
-    console.log( ' Output: ', Field( 1 ).toString() )
-
-    // Field( -1 )
-    console.log( 'Test Field( -1 )' )
-    console.log( ' Output: ', Field( -1 ).toString() )
-
-    // Field( -1 ).neg()
-    console.log( 'Test Field( -1 ).neg()' )
-    console.log( ' Output: ', Field( -1 ).neg().toString() )
-
-    // Field( 255 )
-    console.log( 'Test Field( 255 )' )
-    console.log( ' Output: ', Field( 255 ).toString() )
-
-    // Field( 255 ).add( 1 )
-    console.log( 'Test Field( 255 ).add( 1 )' )
-    console.log( ' Output: ', Field( 255 ).add( 1 ).toString() )
-
-    // Field( 255 ).add( 2 )
-    console.log( 'Test Field( 255 ).add( 2 )' )
-    console.log( ' Output: ', Field( 255 ).add( 2 ).toString() )
-
-    // Field( 1 ).div( 4 )
-    console.log( 'Test Field( 1 ).div( 4 )' )
-    console.log( ' Output: ', Field( 1 ).div( 4 ).toString() )
-
-    // Field( 1 ).div( 4 ).mul( 4 )
-    console.log( 'Test Field( 1 ).div( 4 ).mul( 4 )' )
-    console.log( ' Output: ', Field( 1 ).div( 4 ).mul( 4 ).toString() )
-
-    // Field( 4 ).div( 16 ).mul( 4 )
-    console.log( 'Test Field( 4 ) ).div( 16 ).mul( 4 )' )
-    console.log( ' Output: ', Field( 4 ).div( 16 ).mul( 4 ).toString() )
-
-    // Field( 32 ).div( 16 ).mul( 4 ) 
-    console.log( 'Test Field( 32 ) ).div( 16 ).mul( 4 )' )
-    console.log( ' Output: ', Field( 32 ).div( 16 ).mul( 4 ).toString() )
-
-    // Field( 36 ).div( 16 ).mul( 4 )
-    console.log( 'Test Field( 36 ).div( 16 ).mul( 4 )' )
-    console.log( ' Output: ', Field( 36 ).div( 16 ).mul( 4 ).toString() )
-}
-
 //////////////////////////////// Test num2float ////////////////////////////////
 function verify_num2float( ) {
     // num2float( 1 )
     console.log( 'Test num2float( 1 )' )
     console.log( ' Output: ', st.num2float( 1 ).toString() )
-    console.assert(st.num2float( 1 ).toString() === '256');
+    console.assert(st.num2float( 1 ).toString() === '100000000');
 
     console.log( 'Test num2float( 0.7 )' )
     console.log( ' Output: ', st.num2float( 0.7 ).toString() )
-    console.assert(st.num2float( 0.7 ).toString() === '256');
-
-    // num2float( 254 )
-    console.log( 'Test num2float( 254 )' )
-    console.log( ' Output: ', st.num2float( 254 ).toString() )
-    console.assert(st.num2float( 254 ).toString() === '65024');
-
-
-    // num2float( 255 )
-    console.log( 'Test num2float( 255 )' )
-    console.log( ' Output: ', st.num2float( 255 ).toString() )
-    console.assert(st.num2float( 254 ).toString() === '65280');
-
-    // num2float( 255 )
-    console.log( 'Test num2float( 255 ).add( 1 ) ' )
-    console.log( ' Output: ', st.num2float( 255 ).add( st.num2float( 1 ) ).toString() )
-    console.assert(st.num2float( 255 ).add( st.num2float( 1 ) ).toString() === '65536');
+    console.assert(st.num2float( 0.7 ).toString() === '70000000');
 
     // num2float( -1 )
     console.log( 'Test num2float( -1 )' )
     console.log( ' Output: ', st.num2float( -1 ).toString() )
-    console.assert(st.num2float( -1 ).toString() === '-256');
+    console.assert(st.num2float( -1 ).toString() === '-100000000');
 
     // num2float( -1 ).mul( num2float( -1 ) )
     console.log( 'Test num2float( -1 ).mul( num2float( -1 ) )' )
     console.log( ' Output: ', st.num2float( -1 ).mul( st.num2float( -1 ) ).toString() )
-    console.assert(st.num2float( -1 ).mul( st.num2float( -1 ) ).toString() === '65536');
+    console.assert(st.num2float( -1 ).mul( st.num2float( -1 ) ).toString() === '10000000000000000');
 
     // num2float( 1 ).div( 4 )
     console.log( 'Test num2float( 1 ).div( 4 ) - truncation' )
@@ -163,37 +100,37 @@ function verify_num2float( ) {
     // num2float( 4 ).div( 16 ).mul( 4 )
     console.log( 'Test num2float( 4 ).div( 16 ).mul( 4 )' )
     console.log( ' Output: ', st.num2float( 4 ).div( st.num2float( 16 ) ).mul( st.num2float( 4 ) ).toString() )
-    console.assert(st.num2float( 4 ).div( st.num2float( 16 ) ).mul( st.num2float( 4 ) ).toString() === '64');
+    console.assert(st.num2float( 4 ).div( st.num2float( 16 ) ).mul( st.num2float( 4 ) ).toString() === '0');
 
     // num2float( 0.25 )
     console.log( 'Test num2float( 0.25 )' )
     console.log( ' Output: ', st.num2float( 0.25 ).toString() )
-    console.assert(st.num2float( 0.25 ).toString() === '64');
+    console.assert(st.num2float( 0.25 ).toString() === '25000000');
 
     // num2float( 0.25 ).mul( 4 )
     console.log( 'Test num2float( 0.25 ).mul( 4 )' )
     console.log( ' Output: ', st.num2float( 0.25 ).mul( st.num2float( 4 ) ).toString() )
-    console.assert(st.num2float( 0.25 ).mul( st.num2float( 4 ) ).toString() === '65536');
+    console.assert(st.num2float( 0.25 ).mul( st.num2float( 4 ) ).toString() === '10000000000000000');
 
     // num2float( 0.25 ).mul( num2float( 0.25 ) )
     console.log( 'Test num2float( 0.25 ).mul( num2float( 0.25 ) )' )
     console.log( ' Output: ', st.num2float( 0.25 ).mul( st.num2float( 0.25 ) ).toString() )
-    console.assert(st.num2float( 0.25 ).mul( st.num2float( 0.25 ) ).toString() === '4096');
+    console.assert(st.num2float( 0.25 ).mul( st.num2float( 0.25 ) ).toString() === '625000000000000');
 
     // num2float( 0.25 ).mul( num2float( -0.25 ) )
     console.log( 'Test num2float( 0.25 ).mul( num2float( -0.25 ) )' )
     console.log( ' Output: ', st.num2float( 0.25 ).mul( st.num2float( -0.25 ) ).toString() )
-    console.assert(st.num2float( 0.25 ).mul( st.num2float( -0.25 ) ).toString() === '-4096');
+    console.assert(st.num2float( 0.25 ).mul( st.num2float( -0.25 ) ).toString() === '-625000000000000');
 
     // num2float( 0.25 ).mul( num2float( 0.25 ) )
     console.log( 'Test num2float( 0.25 ).mul( num2float( 0.25 ) ).div( decimal_multipler )' )
     console.log( ' Output: ', st.num2float( 0.25 ).mul( st.num2float( 0.25 ) ).div( st.scale_factor_int65 ).toString() )
+    console.assert(st.num2float( 0.25 ).mul( st.num2float( 0.25 ) ).div( st.scale_factor_int65 ).toString() === '6250000');
 
-    // Previous Crash
-    // -0.7308298349380493 0.05408422648906708
     // num2float( 0.05408422648906708 ).mul( num2float( -0.7308298349380493 ) )
     console.log( 'Test num2float( 0.05408422648906708 ).mul( num2float( -0.7308298349380493 ) )' )
     console.log( ' Output: ', st.num2float( 0.05408422648906708 ).mul( st.num2float( -0.7308298349380493 ) ).toString() )
+    console.assert(st.num2float( 0.05408422648906708  ).mul( st.num2float( -0.7308298349380493 ) ).toString() === '-395263618491248');
 }
 
 //////////////////////////////// Test dot_product_t1 ////////////////////////////////
@@ -216,15 +153,15 @@ function verify_dot_product_t1( ) {
 
     console.log( ' dot_product_t1( v1, v1 )' )
     console.log( ' Output: ', st.dot_product_t1( v1, v1 ).toString() )
-    console.assert( st.dot_product_t1( v1, v1 ).toString() === '1296');
+    console.assert( st.dot_product_t1( v1, v1 ).toString() === '506250000');
 
     console.log( ' dot_product_t1( v1, v2 )' )
     console.log( ' Output: ', st.dot_product_t1( v1, v2 ).toString() )
-    console.assert( st.dot_product_t1( v1, v2 ).toString() === '-1296');
+    console.assert( st.dot_product_t1( v1, v2 ).toString() === '-506250000');
 
     console.log( ' dot_product_t1( v2, v2 )' )
     console.log( ' Output: ', st.dot_product_t1( v2, v2 ).toString() )
-    console.assert( st.dot_product_t1( v2, v2 ).toString() === '1296');
+    console.assert( st.dot_product_t1( v2, v2 ).toString() === '506250000');
 
 }
 
@@ -269,6 +206,20 @@ function verify_dot_product_t2( ) {
     
     // Crash
     let m_3_out = st.dot_product_t2( st.num2float_t2( weights_l1 ), st.num2float_t2( weights_l2 ) )
+}
+
+async function test_rec( x: Int65 ): Promise<Int65> {
+    console.log( x.toString() )
+    return await Circuit.if( Bool( x.equals( Int65.zero ).toBoolean() ),
+        Int65.zero,
+        await test_rec( x.sub( Int65.fromNumber( 1 ) ) )
+ )
+}
+
+function verify_exp( ){
+    //console.log( test_rec( Int65.fromNumber( 5 ) ) )
+    console.log( st.exp( Int65.fromNumber( 963254250 ) ).toString() )
+
 }
 
 // Shutdown
