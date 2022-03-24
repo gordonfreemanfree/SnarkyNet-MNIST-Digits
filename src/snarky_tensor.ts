@@ -1,6 +1,7 @@
 // Description: SnarkyTensor allows for the methods utilized for manipulating tensors
 export { SnarkyTensor };
 
+import { Field } from 'snarkyjs'
 import { Int65 } from './Int65.js';
 
 class SnarkyTensor {
@@ -61,22 +62,40 @@ class SnarkyTensor {
     return y;
   }
 
+  exp_part( x: Int65, y: number, z: number ): Int65 {
+    // Portion of the Expotential Calculation
+    // (x^y)/z
+    let result = x
+    result = result.div( Int65.fromNumber( z ) )
+    for (let i = 1; i < y; i++) {
+        result = result.mul( x ).div( this.scale_factor_int65 )
+      }
+    return result
+  }
+
   // Description:   Calculate the expotential
-  // Input:         x - Rank 0 Tensor of type Int65 for the power
-  // Output:        y - Rank 0 Tensor of type Int65 result of calculation
+  // Input:         Rank 0 Tensor of type Int65 for the power
+  // Output:        Rank 0 Tensor of type Int65 result of calculation
   exp( x: Int65 ): Int65 {
     // Expotential Implementation
-    let y = Math.exp( Number( x.toString() ) / this.scale_factor )
-    return Int65.fromNumber( Math.floor( y * this.scale_factor ) );  
+    // 1 + x + (x^2)/2 + (x^3)/6 + (x^4)/24 + (x^5)/120 + (x^6)/720 + (x^7)/5040
+    return this.num2int65( 1 ).
+      add( x ).
+      add( this.exp_part( x, 2, 2 ) ).
+      add( this.exp_part( x, 3, 6 ) ).
+      add( this.exp_part( x, 4, 24 ) ).
+      add( this.exp_part( x, 5, 120 ) ).
+      add( this.exp_part( x, 6, 720 ) ).
+      add( this.exp_part( x, 7, 5040 ) )
   }
 
   // Description:   Convert a Rank 2 Tensor of numbers to Rank 2 Tensor of Int64s
   // Input:         x - Rank 2 Tensor of type number
   // Output:        y - Rank 2 Tensor of type Int65
-  num2float_t2( x: Array<number>[] ): Array<Int65>[] {
+  num2int65_t2( x: Array<number>[] ): Array<Int65>[] {
     let y = Array();
     x.forEach( ( value, index ) => 
-      y[ index ] = this.num2float_t1( value )
+      y[ index ] = this.num2int65_t1( value )
     )
     return y
   }
@@ -84,10 +103,10 @@ class SnarkyTensor {
   // Description:   Convert a Rank 1 Tensor of numbers to Rank 1 Tensor of Int64s
   // Input:         x - Rank 1 Tensor of type number
   // Output:        y - Rank 1 Tensor of type Int65
-  num2float_t1( x: Array<number> ): Array<Int65> {
+  num2int65_t1( x: Array<number> ): Array<Int65> {
     let y = Array();
     x.forEach( ( value, index ) => 
-      y[ index ] = this.num2float( value )
+      y[ index ] = this.num2int65( value )
     )
     return y;
   }
@@ -96,7 +115,7 @@ class SnarkyTensor {
   // scale factor and taking the floor
   // Input:         x - number
   // Output:        y - Int65
-  num2float( x: number ): Int65 {
+  num2int65( x: number ): Int65 {
     return Int65.fromNumber( Math.floor( x * this.scale_factor ) );    
   }
 }

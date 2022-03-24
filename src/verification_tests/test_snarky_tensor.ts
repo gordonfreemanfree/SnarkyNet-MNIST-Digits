@@ -11,11 +11,11 @@ import { Int65 } from '../Int65.js';
 await isReady;
 
 // Create Class
-let st = new SnarkyTensor( );
+let st = new SnarkyTensor( 4 );
 
 // Run verify tests
 // verify_Int65( )
-// verify_num2float( )
+// verify_num2int65( )
 // verify_dot_product_t1( )
 // verify_dot_product_t2( )
 verify_exp( )
@@ -66,71 +66,71 @@ function verify_Int65( ) {
 }
 
 
-//////////////////////////////// Test num2float ////////////////////////////////
-function verify_num2float( ) {
-    // num2float( 1 )
-    console.log( 'Test num2float( 1 )' )
-    console.log( ' Output: ', st.num2float( 1 ).toString() )
-    console.assert(st.num2float( 1 ).toString() === '100000000');
+//////////////////////////////// Test num2int65 ////////////////////////////////
+function verify_num2int65( ) {
+    // num2int65( 1 )
+    console.log( 'Test num2int65( 1 )' )
+    console.log( ' Output: ', st.num2int65( 1 ).toString() )
+    console.assert(st.num2int65( 1 ).toString() === '100000000');
 
-    console.log( 'Test num2float( 0.7 )' )
-    console.log( ' Output: ', st.num2float( 0.7 ).toString() )
-    console.assert(st.num2float( 0.7 ).toString() === '70000000');
+    console.log( 'Test num2int65( 0.7 )' )
+    console.log( ' Output: ', st.num2int65( 0.7 ).toString() )
+    console.assert(st.num2int65( 0.7 ).toString() === '70000000');
 
-    // num2float( -1 )
-    console.log( 'Test num2float( -1 )' )
-    console.log( ' Output: ', st.num2float( -1 ).toString() )
-    console.assert(st.num2float( -1 ).toString() === '-100000000');
+    // num2int65( -1 )
+    console.log( 'Test num2int65( -1 )' )
+    console.log( ' Output: ', st.num2int65( -1 ).toString() )
+    console.assert(st.num2int65( -1 ).toString() === '-100000000');
 
-    // num2float( -1 ).mul( num2float( -1 ) )
-    console.log( 'Test num2float( -1 ).mul( num2float( -1 ) )' )
-    console.log( ' Output: ', st.num2float( -1 ).mul( st.num2float( -1 ) ).toString() )
-    console.assert(st.num2float( -1 ).mul( st.num2float( -1 ) ).toString() === '10000000000000000');
+    // num2int65( -1 ).mul( num2int65( -1 ) )
+    console.log( 'Test num2int65( -1 ).mul( num2int65( -1 ) )' )
+    console.log( ' Output: ', st.num2int65( -1 ).mul( st.num2int65( -1 ) ).toString() )
+    console.assert(st.num2int65( -1 ).mul( st.num2int65( -1 ) ).toString() === '10000000000000000');
 
-    // num2float( 1 ).div( 4 )
-    console.log( 'Test num2float( 1 ).div( 4 ) - truncation' )
-    console.log( ' Output: ', st.num2float( 1 ).div( st.num2float( 4 ) ).toString() )
-    console.assert(st.num2float( -1 ).div( st.num2float( 4 ) ).toString() === '0');
+    // num2int65( 1 ).div( 4 )
+    console.log( 'Test num2int65( 1 ).div( 4 ) - truncation' )
+    console.log( ' Output: ', st.num2int65( 1 ).div( st.num2int65( 4 ) ).toString() )
+    console.assert(st.num2int65( -1 ).div( st.num2int65( 4 ) ).toString() === '0');
 
-    // num2float( 1 ).div( 4 ).mul( 4 )
-    console.log( 'Test num2float( 1 ).div( 4 ).mul( 4 ) - truncation' )
-    console.log( ' Output: ', st.num2float( 1 ).div( st.num2float( 4 ) ).mul( st.num2float( 4 ) ).toString() )
-    console.assert(st.num2float( -1 ).div( st.num2float( 4 ) ).mul( st.num2float( 4 ) ).toString() === '0');
+    // num2int65( 1 ).div( 4 ).mul( 4 )
+    console.log( 'Test num2int65( 1 ).div( 4 ).mul( 4 ) - truncation' )
+    console.log( ' Output: ', st.num2int65( 1 ).div( st.num2int65( 4 ) ).mul( st.num2int65( 4 ) ).toString() )
+    console.assert(st.num2int65( -1 ).div( st.num2int65( 4 ) ).mul( st.num2int65( 4 ) ).toString() === '0');
 
-    // num2float( 4 ).div( 16 ).mul( 4 )
-    console.log( 'Test num2float( 4 ).div( 16 ).mul( 4 )' )
-    console.log( ' Output: ', st.num2float( 4 ).div( st.num2float( 16 ) ).mul( st.num2float( 4 ) ).toString() )
-    console.assert(st.num2float( 4 ).div( st.num2float( 16 ) ).mul( st.num2float( 4 ) ).toString() === '0');
+    // num2int65( 4 ).div( 16 ).mul( 4 )
+    console.log( 'Test num2int65( 4 ).div( 16 ).mul( 4 )' )
+    console.log( ' Output: ', st.num2int65( 4 ).div( st.num2int65( 16 ) ).mul( st.num2int65( 4 ) ).toString() )
+    console.assert(st.num2int65( 4 ).div( st.num2int65( 16 ) ).mul( st.num2int65( 4 ) ).toString() === '0');
 
-    // num2float( 0.25 )
-    console.log( 'Test num2float( 0.25 )' )
-    console.log( ' Output: ', st.num2float( 0.25 ).toString() )
-    console.assert(st.num2float( 0.25 ).toString() === '25000000');
+    // num2int65( 0.25 )
+    console.log( 'Test num2int65( 0.25 )' )
+    console.log( ' Output: ', st.num2int65( 0.25 ).toString() )
+    console.assert(st.num2int65( 0.25 ).toString() === '25000000');
 
-    // num2float( 0.25 ).mul( 4 )
-    console.log( 'Test num2float( 0.25 ).mul( 4 )' )
-    console.log( ' Output: ', st.num2float( 0.25 ).mul( st.num2float( 4 ) ).toString() )
-    console.assert(st.num2float( 0.25 ).mul( st.num2float( 4 ) ).toString() === '10000000000000000');
+    // num2int65( 0.25 ).mul( 4 )
+    console.log( 'Test num2int65( 0.25 ).mul( 4 )' )
+    console.log( ' Output: ', st.num2int65( 0.25 ).mul( st.num2int65( 4 ) ).toString() )
+    console.assert(st.num2int65( 0.25 ).mul( st.num2int65( 4 ) ).toString() === '10000000000000000');
 
-    // num2float( 0.25 ).mul( num2float( 0.25 ) )
-    console.log( 'Test num2float( 0.25 ).mul( num2float( 0.25 ) )' )
-    console.log( ' Output: ', st.num2float( 0.25 ).mul( st.num2float( 0.25 ) ).toString() )
-    console.assert(st.num2float( 0.25 ).mul( st.num2float( 0.25 ) ).toString() === '625000000000000');
+    // num2int65( 0.25 ).mul( num2int65( 0.25 ) )
+    console.log( 'Test num2int65( 0.25 ).mul( num2int65( 0.25 ) )' )
+    console.log( ' Output: ', st.num2int65( 0.25 ).mul( st.num2int65( 0.25 ) ).toString() )
+    console.assert(st.num2int65( 0.25 ).mul( st.num2int65( 0.25 ) ).toString() === '625000000000000');
 
-    // num2float( 0.25 ).mul( num2float( -0.25 ) )
-    console.log( 'Test num2float( 0.25 ).mul( num2float( -0.25 ) )' )
-    console.log( ' Output: ', st.num2float( 0.25 ).mul( st.num2float( -0.25 ) ).toString() )
-    console.assert(st.num2float( 0.25 ).mul( st.num2float( -0.25 ) ).toString() === '-625000000000000');
+    // num2int65( 0.25 ).mul( num2int65( -0.25 ) )
+    console.log( 'Test num2int65( 0.25 ).mul( num2int65( -0.25 ) )' )
+    console.log( ' Output: ', st.num2int65( 0.25 ).mul( st.num2int65( -0.25 ) ).toString() )
+    console.assert(st.num2int65( 0.25 ).mul( st.num2int65( -0.25 ) ).toString() === '-625000000000000');
 
-    // num2float( 0.25 ).mul( num2float( 0.25 ) )
-    console.log( 'Test num2float( 0.25 ).mul( num2float( 0.25 ) ).div( decimal_multipler )' )
-    console.log( ' Output: ', st.num2float( 0.25 ).mul( st.num2float( 0.25 ) ).div( st.scale_factor_int65 ).toString() )
-    console.assert(st.num2float( 0.25 ).mul( st.num2float( 0.25 ) ).div( st.scale_factor_int65 ).toString() === '6250000');
+    // num2int65( 0.25 ).mul( num2int65( 0.25 ) )
+    console.log( 'Test num2int65( 0.25 ).mul( num2int65( 0.25 ) ).div( decimal_multipler )' )
+    console.log( ' Output: ', st.num2int65( 0.25 ).mul( st.num2int65( 0.25 ) ).div( st.scale_factor_int65 ).toString() )
+    console.assert(st.num2int65( 0.25 ).mul( st.num2int65( 0.25 ) ).div( st.scale_factor_int65 ).toString() === '6250000');
 
-    // num2float( 0.05408422648906708 ).mul( num2float( -0.7308298349380493 ) )
-    console.log( 'Test num2float( 0.05408422648906708 ).mul( num2float( -0.7308298349380493 ) )' )
-    console.log( ' Output: ', st.num2float( 0.05408422648906708 ).mul( st.num2float( -0.7308298349380493 ) ).toString() )
-    console.assert(st.num2float( 0.05408422648906708  ).mul( st.num2float( -0.7308298349380493 ) ).toString() === '-395263618491248');
+    // num2int65( 0.05408422648906708 ).mul( num2int65( -0.7308298349380493 ) )
+    console.log( 'Test num2int65( 0.05408422648906708 ).mul( num2int65( -0.7308298349380493 ) )' )
+    console.log( ' Output: ', st.num2int65( 0.05408422648906708 ).mul( st.num2int65( -0.7308298349380493 ) ).toString() )
+    console.assert(st.num2int65( 0.05408422648906708  ).mul( st.num2int65( -0.7308298349380493 ) ).toString() === '-395263618491248');
 }
 
 //////////////////////////////// Test dot_product_t1 ////////////////////////////////
@@ -144,11 +144,11 @@ function vector2string( v: Array<Int65> | Array<Field> | Array<number> ): Array<
 function verify_dot_product_t1( ) {
 
     console.log( 'Create v1 [ 0.25, 1, 2 ]' );
-    let v1 = st.num2float_t1( [ 0.25, 1, 2 ]);
+    let v1 = st.num2int65_t1( [ 0.25, 1, 2 ]);
     console.log( vector2string( v1 ) );
 
     console.log( 'Create v2 [ -0.25, -1, -2 ]' );
-    let v2 = st.num2float_t1( [ -0.25, -1, -2 ]);
+    let v2 = st.num2int65_t1( [ -0.25, -1, -2 ]);
     console.log( vector2string( v2 ) );
 
     console.log( ' dot_product_t1( v1, v1 )' )
@@ -173,9 +173,9 @@ function verify_dot_product_t2( ) {
     }
 
     console.log( 'Create m1 ' );
-    let m1 = [  st.num2float_t1( [ 0.25, 1, 2 ]),
-                st.num2float_t1( [ 0.25, 1, 2 ]),
-                st.num2float_t1( [ 0.25, 1, 2 ])]
+    let m1 = [  st.num2int65_t1( [ 0.25, 1, 2 ]),
+                st.num2int65_t1( [ 0.25, 1, 2 ]),
+                st.num2int65_t1( [ 0.25, 1, 2 ])]
     matrix2string( m1 );
 
     console.log( 'Dot Product Output' );
@@ -187,14 +187,14 @@ function verify_dot_product_t2( ) {
                      [812500, 3250000, 6500000] ] );
 
     console.log( 'Create m2' );
-    let m2 = [  st.num2float_t1( [ 0.25, 1, 2 ]),
-                st.num2float_t1( [ 0.25, 1, 2 ])]
+    let m2 = [  st.num2int65_t1( [ 0.25, 1, 2 ]),
+                st.num2int65_t1( [ 0.25, 1, 2 ])]
     matrix2string( m2 );
 
     console.log( 'Create m3' );
-    let m3 = [  st.num2float_t1( [ 0.25, 1 ]),
-                st.num2float_t1( [ 0.25, 1 ]),
-                st.num2float_t1( [ 0.25, 1 ])]
+    let m3 = [  st.num2int65_t1( [ 0.25, 1 ]),
+                st.num2int65_t1( [ 0.25, 1 ]),
+                st.num2int65_t1( [ 0.25, 1 ])]
     matrix2string( m3 );
 
     console.log( 'Dot Product Output' );
@@ -205,7 +205,7 @@ function verify_dot_product_t2( ) {
                      [812500, 3250000] ] );
     
     // Crash
-    let m_3_out = st.dot_product_t2( st.num2float_t2( weights_l1 ), st.num2float_t2( weights_l2 ) )
+    let m_3_out = st.dot_product_t2( st.num2int65_t2( weights_l1 ), st.num2int65_t2( weights_l2 ) )
 }
 
 async function test_rec( x: Int65 ): Promise<Int65> {
@@ -217,9 +217,33 @@ async function test_rec( x: Int65 ): Promise<Int65> {
 }
 
 function verify_exp( ){
-    //console.log( test_rec( Int65.fromNumber( 5 ) ) )
-    console.log( st.exp( Int65.fromNumber( 963254250 ) ).toString() )
+    console.log( "exp( 5.0 ): ", Number( st.exp( st.num2int65( 5.0 ) ).toString() ) / Math.pow( 10, 4 ), " Expected: 148.413159102576603" )
+    console.log( "exp( 4.5 ): ", Number( st.exp( st.num2int65( 4.5 ) ).toString() ) / Math.pow( 10, 4 ), " Expected: 90.017131300521814" )
+    console.log( "exp( 4.0 ): ", Number( st.exp( st.num2int65( 4.0 ) ).toString() ) / Math.pow( 10, 4 ), " Expected: 54.598150033144239" )
+    console.log( "exp( 3.5 ): ", Number( st.exp( st.num2int65( 3.5 ) ).toString() ) / Math.pow( 10, 4 ), " Expected: 33.115451958692314" )
+    console.log( "exp( 3.0 ): ", Number( st.exp( st.num2int65( 3.0 ) ).toString() ) / Math.pow( 10, 4 ), " Expected: 20.085536923187668" )
+    console.log( "exp( 2.5 ): ", Number( st.exp( st.num2int65( 2.5 ) ).toString() ) / Math.pow( 10, 4 ), " Expected: 12.182493960703473" )
+    console.log( "exp( 2.0 ): ", Number( st.exp( st.num2int65( 2.0 ) ).toString() ) / Math.pow( 10, 4 ), " Expected: 7.38905609893065" )
+    console.log( "exp( 1.5 ): ", Number( st.exp( st.num2int65( 1.5 ) ).toString() ) / Math.pow( 10, 4 ), " Expected: 4.481689070338065" )
+    console.log( "exp( 0.5 ): ", Number( st.exp( st.num2int65( 0.5 ) ).toString() ) / Math.pow( 10, 4 ), " Expected: 1.648721270700128" )
+    console.log( "exp( -0.5 ): ", Number( st.exp( st.num2int65( -0.5 ) ).toString() ) / Math.pow( 10, 4 ), " Expected: 0.606530659712633" )
+    console.log( "exp( -0.1 ): ", Number( st.exp( st.num2int65( -0.1 ) ).toString() ) / Math.pow( 10, 4 ), " Expected: 0.90483741803596" )
+    console.log( "exp( -2.0 ): ", Number( st.exp( st.num2int65( -2.0 ) ).toString() ) / Math.pow( 10, 4 ), " Expected: 0.135335283236613" )
+    console.log( "exp( -2.5 ): ", Number( st.exp( st.num2int65( -2.5 ) ).toString() ) / Math.pow( 10, 4 ), " Expected: 0.082084998623899" )
+    console.log( "exp( -3.0 ): ", Number( st.exp( st.num2int65( -3.0 ) ).toString() ) / Math.pow( 10, 4 ), " Expected: 0.049787068367864" )
+    console.log( "exp( -3.5 ): ", Number( st.exp( st.num2int65( -3.5 ) ).toString() ) / Math.pow( 10, 4 ), " Expected: 0.030197383422319" )
+    console.log( "exp( -4.0 ): ", Number( st.exp( st.num2int65( -4.0 ) ).toString() ) / Math.pow( 10, 4 ), " Expected: 0.018315638888734" )
+    console.log( "exp( -4.5 ): ", Number( st.exp( st.num2int65( -4.5 ) ).toString() ) / Math.pow( 10, 4 ), " Expected: 0.011108996538242" )
+    console.log( "exp( -5.0 ): ", Number( st.exp( st.num2int65( -5.0 ) ).toString() ) / Math.pow( 10, 4 ), " Expected: 0.006737946999085" )
 
+    console.log( "exp( 67.09920126 ): ", Number( st.exp( st.num2int65( 67.09920126 ) ).toString() ) / Math.pow( 10, 4 ), " Expected: 1.382970280327077e29" )
+    console.log( "exp( 106.4289438 ): ", Number( st.exp( st.num2int65( 106.4289438 ) ).toString() ) / Math.pow( 10, 4 ), " Expected: 1.665340358854376e46" )
+
+    console.log( "exp( -67.09920126 ): ", Number( st.exp( st.num2int65( -67.09920126 ) ).toString() ) / Math.pow( 10, 4 ), " Expected: 1.10292811e-25" )
+    console.log( "exp( -106.4289438 ): ", Number( st.exp( st.num2int65( -106.4289438 ) ).toString() ) / Math.pow( 10, 4 ), " Expected: 9.15918956e-43" )
+
+    
+    
 }
 
 // Shutdown

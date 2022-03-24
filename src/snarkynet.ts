@@ -30,10 +30,10 @@ class SnarkyLayer extends SnarkyTensor {
     this.activation = this.activation_selection( activation );
 
     // Set alpha
-    this.alpha = this.num2float( alpha );
+    this.alpha = this.num2int65( alpha );
 
     // Weights
-    this.weights = this.num2float_t2( weights );
+    this.weights = this.num2int65_t2( weights );
   }
   
   @method call( input:  Array<Int65>[] ): Array<Int65>[] {
@@ -86,6 +86,7 @@ class SnarkyLayer extends SnarkyTensor {
     let sum = Int65.zero;
     let result = Array<Int65>();
     // Equivalent: result = x / ( x1 + .. + xn )
+    x.forEach( value => console.log( this.exp( value ).toString() ) );
     // result returned as percentage
     x.forEach( value => sum = sum.add( this.exp( value ) ) );
     x.forEach( ( value, i ) => 
@@ -108,7 +109,7 @@ class SnarkyNet extends SnarkyTensor {
   @method predict( inputs: Array<number>[] ): Int65 {
     // Prediction method to run the model
     // Step 1. Convert initial inputs to a float
-    let x = this.num2float_t2( inputs ); 
+    let x = this.num2int65_t2( inputs ); 
     
     // Step 2. Call the SnarkyLayers
     this.layers.forEach( ( layer ) => 

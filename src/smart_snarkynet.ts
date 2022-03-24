@@ -20,7 +20,7 @@ import {
 import { weights_l1, weights_l2 } from './weights.js';
 
 // Import Example Images
-import { image_4 } from './example_images.js';
+import { image_a_7, image_b_2, image_c_1, image_d_0, image_e_4, image_f_1, image_g_4, image_h_9, image_i_5, image_j_9 } from './example_images.js';
 
 // Import SnarkyNet and SnarkyLayers
 import { SnarkyNet, SnarkyLayer } from './snarkynet.js'
@@ -102,7 +102,7 @@ export async function runSnarkNet() {
 //////////////////////////////// Test 1 ////////////////////////////////
   console.log( 'Test 1 - Start: Run prediction on image_4:', new Date().getTime() / 1000 - startTime );
   await Mina.transaction( account1, async () => {
-    await snappInstance.predict( [ image_4 ] );
+    await snappInstance.predict( [ image_a_7 ] );
     })
     .send()
     .wait()
