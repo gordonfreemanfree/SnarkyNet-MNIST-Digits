@@ -43,7 +43,7 @@ follow to be equivalent
 Python:
 ```
 model = keras.Sequential( [ 
-    layers.Dense( 512, activation='relu' ),
+    layers.Dense( 128, activation='relu' ),
     layers.Dense( 10, activation='softmax' )
     ] )
 ```
