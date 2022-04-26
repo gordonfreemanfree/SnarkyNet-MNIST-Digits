@@ -18,6 +18,15 @@ and the usage of Tensorflow is no longer necessary.
 With the SnarkyNet model, a prediction can be performed within the circuit math to create a
 proof that can be utilized in SNAPPS in a secure manner. 
 
+Unfortunately, the proof-of-concept has revealed that the implementation of the exp component
+was the major limitation in the multi-class classification model. Utilizing the taylor series
+was accurate from range of -2.5 to 2.5 but the model required calculations such as exp(-109),
+etc. for the Softmax activation function. Due to the limitation, the Softmax activation 
+function could not be implemented. However, the values input to the Softmax activation
+function lined up with the Tensorflow results. While a Deep Neural Network is possible in 
+SnarkyJS, the implementation of a multi-class classification Neural Network hit the roadblock
+of the expotential function. 
+
 ### Implementation Decisions
 Training of the model is performed in Tensorflow to maintain the efficiencies including GPU 
 support, methods for evaluating performance, and optimization. The weights obtained from 
@@ -52,7 +61,7 @@ Tensorflow model.
 
 ### Model Implementation
 The Neural Network consists of two layers:
-- Dense layer of 512 nodes with the RelU Activation Function
+- Dense layer of 128 nodes with the RelU Activation Function
 - Dense layer of 10 nodes with a (pseudo) Softmax Activation Function
 
 ## Flow
@@ -69,6 +78,4 @@ softmax function. Currently, there is a pseudo softmax function to calculate rel
 for the classifications but it is lacking the exp implementation. 
 
 The following needs to be resolved:
- - Determine a method to perform the conversion from a positive or negative float to a Field-like 
- representation that can be used in the circuit math.
  - Implement Softmax activation function for the Field-like representation
